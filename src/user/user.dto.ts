@@ -1,8 +1,8 @@
 export class userDto {
-  readonly name: string;
-  readonly email: string;
+  name: string;
+  email: string;
 }
 
 export class CreateUserDto extends userDto {
-  readonly password: string;
+  password: string;
 }
