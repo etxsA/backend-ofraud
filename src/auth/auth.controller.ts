@@ -6,39 +6,59 @@ import { UserModel } from 'src/user/user.model';
 import { TokensService } from './tokens.service';
 import { JwtAuthGuard } from 'src/common/guards/jwt-auth.guard';
 import type { AuthenticatedRequest } from 'src/interfaces/authenticated_request';
+import { ApiResponse, ApiTags } from '@nestjs/swagger';
 
+@ApiTags('Authentication endpoints')
 @Controller('auth')
 export class AuthController {
     constructor(private readonly userService: UserService, private readonly tokenService: TokensService) {}
 
     @Post('login')
+    @ApiResponse({ status: 201, description: 'User logged in successfully.', example: { accessToken: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...', refreshToken: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...' } })
+    @ApiResponse({ status: 401, description: 'Incorrect email or password', example: { message: 'No user with that email' } })
     async login(@Body() dto: LoginDto) {
         try {
             const user: UserModel = await this.userService.login(dto);
             const accessToken = await this.tokenService.generateAccessToken(user);
             const refreshToken = await this.tokenService.generateRefreshToken(user);
-            
-            return {
-            accessToken,
-            refreshToken,
-            };
-            
-        } catch (error) {
-            if(error instanceof UnauthorizedException) {
-                return { message: error.message };
-            }
-            return { message: 'No user with that email' };
 
-        }        
+            return {
+                accessToken,
+                refreshToken,
+            };
+        } catch (error) {
+            if (error instanceof UnauthorizedException) {
+                throw new UnauthorizedException(error.message);
+            } else if(error instanceof Error) {
+                throw new UnauthorizedException(error.message);
+            }
+        }
     }
 
     @Get('profile')
+    @ApiResponse({ status: 401, description: 'Unauthorized' ,  example: {
+        message: "Invalid token",
+        error: "Unauthorized",
+        statusCode: 401
+    }})
+    @ApiResponse({ status: 200, description: 'The user profile', example: { 
+        id: 1,
+        name: 'Jose Torres',
+        email: 'email@email.com',
+        admin: null,
+    }})
     @UseGuards(JwtAuthGuard)
     getProfile(@Req() req: AuthenticatedRequest) {
         return req.user.profile;
     }
 
     @Post('refresh')
+    @ApiResponse({ status: 201, description: 'Token refreshed successfully.', example: { accessToken: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...', refreshToken: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...' } })
+    @ApiResponse({ status: 401, description: 'Invalid refresh token', example: {
+        message: "Invalid refresh token",
+        error: "Unauthorized",
+        statusCode: 401
+    }})
     async refresh(@Body('refreshToken') refreshToken: string) {
         try {
             const payload = await this.tokenService.verifyRefeshToken(refreshToken);
