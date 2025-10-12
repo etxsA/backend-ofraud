@@ -1,0 +1,21 @@
+/* eslint-disable prettier/prettier */
+
+export class UserModel {
+    id: number;
+    name: string;
+    email: string;
+    password: string;
+    salt?: string;
+    creation_date: Date;
+    profilePic?: string
+    admin?: boolean;
+    update_date?: Date;
+    
+
+    constructor(id: number, name: string, email: string, password: string) {
+      this.id = id;
+      this.name = name;
+      this.email = email;
+      this.password = password;
+    }
+}
