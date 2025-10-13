@@ -1,6 +1,6 @@
 /* eslint-disable prettier/prettier */
 import { Body, Controller, Delete, Param, Post, Put, Req, UseGuards,  } from "@nestjs/common";
-import { CreateUserDto, UpdateUserDto, UpdateUserResponseDto, userDto, UserResponseDto } from "./user.dto";
+import { CreateUserDto, DeleteUserResponseDto, UpdateUserDto, UpdateUserResponseDto,  UserResponseDto } from "./user.dto";
 import { UserService } from "./user.service";
 import { ApiBearerAuth, ApiOperation, ApiResponse, ApiTags } from "@nestjs/swagger";
 import { JwtAuthGuard } from "src/common/guards/jwt-auth.guard";
@@ -45,12 +45,28 @@ export class UserController {
     }
     
     @Delete(":id")
+    @UseGuards(JwtAuthGuard)
+    @ApiBearerAuth()
     @ApiOperation({ summary: 'Delete user by id' })
-    @ApiResponse({ status: 200, description: 'The user has been deleted.'})
-    @ApiResponse({ status: 404, description: 'User not found.'})
+    @ApiResponse({ status: 200, description: 'The user has been deleted.', example: { id: 1}})
+    @ApiResponse({ status: 401, description: 'Unauthorized' ,  example: {
+        message: "Invalid token",
+        error: "Unauthorized",
+        statusCode: 401
+    }})
+    @ApiResponse({ status: 404, description: 'User not found.', example: {
+        message: "User not found",
+        error: "Not Found",
+        statusCode: 404
+    }})
+    @ApiResponse({ status: 403, description: 'Forbidden, you do not have permission to Delete this user.', example: {
+        message: "You do not have permission to Delete this user",
+        error: "Forbidden",
+        statusCode: 403
+    }})       
     @ApiResponse({ status: 500, description: 'Internal server error.'})
-    async deleteUser(@Param("id") id: number): Promise<void> {
-        //return this.userService.deleteUser(id);
+    async deleteUser(@Param("id") id: number, @Req() req: AuthenticatedRequest): Promise<DeleteUserResponseDto> {
+        return this.userService.deleteUser(id, req.user.profile);
     }
     
 }

@@ -1,6 +1,6 @@
 /* eslint-disable prettier/prettier */
 import { Injectable, UnauthorizedException } from "@nestjs/common";
-import { CreateUserDto, UpdateUserDto, UpdateUserResponseDto, UserResponseDto } from "./user.dto";
+import { CreateUserDto, DeleteUserResponseDto, UpdateUserDto, UpdateUserResponseDto, UserResponseDto } from "./user.dto";
 import { UserRepository } from "./user.repository";
 import { LoginDto } from "src/auth/auth.dto";
 import { UserModel } from "./user.model";
@@ -54,6 +54,10 @@ export class UserService {
         }
 
         return this.userRepository.updateUser(updateUserDto, profile);
+    }
+
+    async deleteUser(id: number, profile: UserProfile): Promise<DeleteUserResponseDto> {
+        return this.userRepository.deleteUser(id, profile);
     }
 
 }

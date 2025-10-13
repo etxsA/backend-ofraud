@@ -1,4 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
+import { inherits } from 'util';
 
 export class userDto {
   @ApiProperty({ example: 'Jose Torres', description: 'Name of the user' })
@@ -21,6 +22,7 @@ export class UserResponseDto extends userDto {
   id: number;
 }
 
+// Updating user
 export class UpdateUserDto {
   @ApiProperty({ example: 1, description: 'ID of the user' })
   id: number;
@@ -64,3 +66,12 @@ export class UpdateUserResponseDto extends userDto {
   })
   profile_pic_url?: string;
 }
+
+// Deleting user
+
+export class DeleteUserDto {
+  @ApiProperty({ example: 1, description: 'ID of the user' })
+  id: number;
+}
+
+export class DeleteUserResponseDto extends DeleteUserDto {}

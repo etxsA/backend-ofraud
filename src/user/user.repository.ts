@@ -1,5 +1,5 @@
 /* eslint-disable prettier/prettier */
-import { CreateUserDto, UpdateUserDto, UpdateUserResponseDto, UserResponseDto} from "./user.dto";
+import { CreateUserDto, DeleteUserResponseDto, UpdateUserDto, UpdateUserResponseDto, UserResponseDto} from "./user.dto";
 import { ForbiddenException, HttpException, HttpStatus, Injectable, InternalServerErrorException, NotFoundException, UnauthorizedException } from "@nestjs/common";
 import { DbService } from "src/db/db.service";
 import { UserModel } from "./user.model";
@@ -104,6 +104,32 @@ export class UserRepository {
         name: updatedUser.name,
         email: updatedUser.email
       } as UserResponseDto;
+    } catch (error) {
+      const message = (error as { message?: string }).message;
+      throw new InternalServerErrorException(message);
+    }
+  }
+  
+  async deleteUser(id: number, profile: UserProfile): Promise<DeleteUserResponseDto> {
+
+    // Ensure user exists and has permission to delete
+    const user = await this.findById(id);
+    if (!user) {
+      throw new NotFoundException('User not found');
+    }
+    if (profile.id !== user.id || (profile.id !== user.id && !(profile.admin ?? false))) {
+      throw new ForbiddenException('You do not have permission to delete this user');
+    }
+    
+    const sql = `DELETE FROM user WHERE id = ${id}`;
+    try {
+      const [result] = await this.dbService.getPool().query(sql);
+      const deleteResult = result as { affectedRows?: number };
+      
+      if (deleteResult.affectedRows === 0) {
+        throw new InternalServerErrorException('User not found or could not be deleted');
+      }
+      return { id } as DeleteUserResponseDto;
     } catch (error) {
       const message = (error as { message?: string }).message;
       throw new InternalServerErrorException(message);
