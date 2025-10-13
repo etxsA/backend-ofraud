@@ -57,7 +57,11 @@ export class FileController {
     @UseGuards(JwtAuthGuard)
     @ApiOperation({ summary: 'Download a protected file by its filename' })
     @ApiBearerAuth() 
-    @ApiResponse({ status: 401, description: 'Unauthorized. Token is missing or invalid.' })
+    @ApiResponse({ status: 401, description: 'Unauthorized. Token is missing or invalid.' , example: {
+        message: "No token provided",
+        error: "Unauthorized",
+        statusCode: 401
+    }})
     @ApiResponse({ status: 404, description: 'File not found', example: { statusCode: 404, message: 'File with name myfile.png not found', error: 'Not Found' } })
     @ApiResponse({ status: 500, description: 'Internal server error', example: { statusCode: 500, message: 'An error ocurred while trying to send the file', error: 'Internal Server Error' } })
     @ApiResponse({ status: 200, description: 'The file', content: { 'application/octet-stream': { schema: { type: 'string', format: 'binary' } } } })
@@ -75,6 +79,7 @@ export class FileController {
 
             res.set({
                 'Content-type': 'application/octet-stream',
+                'Content-Disposition': `attachment; filename="${filename}"`,
             });
             return new StreamableFile(file);
 
