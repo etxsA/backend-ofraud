@@ -1,6 +1,6 @@
 /* eslint-disable prettier/prettier */
 import { Injectable, UnauthorizedException } from "@nestjs/common";
-import { userDto, CreateUserDto } from "./user.dto";
+import { CreateUserDto, UserResponseDto } from "./user.dto";
 import { UserRepository } from "./user.repository";
 import { LoginDto } from "src/auth/auth.dto";
 import { UserModel } from "./user.model";
@@ -12,13 +12,14 @@ export class UserService {
     constructor(private readonly userRepository: UserRepository) {
     }
 
-    async createUser(createUserDto: CreateUserDto): Promise<userDto|void> {
+    async createUser(createUserDto: CreateUserDto): Promise<UserResponseDto> {
 
         // Create hashed password
-        const hashedPassword = hashPassword(createUserDto.password, 'salt');
+        const salt = 'salt'; // Change this to a proper salt generation
+        const hashedPassword = hashPassword(createUserDto.password, salt);
         createUserDto.password = hashedPassword;
         console.log(createUserDto);
-        return this.userRepository.createUser(createUserDto);; 
+        return this.userRepository.createUser(createUserDto, salt);; 
     }
 
     async login(user: LoginDto): Promise<UserModel> {

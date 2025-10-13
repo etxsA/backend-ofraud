@@ -14,3 +14,9 @@ export class CreateUserDto extends userDto {
   })
   password: string;
 }
+
+// This is used to return the user with its ID after creation
+export class UserResponseDto extends userDto {
+  @ApiProperty({ example: 1, description: 'ID of the user' })
+  id: number;
+}

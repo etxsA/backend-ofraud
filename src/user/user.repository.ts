@@ -1,6 +1,6 @@
 /* eslint-disable prettier/prettier */
-import { CreateUserDto} from "./user.dto";
-import { Injectable } from "@nestjs/common";
+import { CreateUserDto, UserResponseDto} from "./user.dto";
+import { Injectable, InternalServerErrorException } from "@nestjs/common";
 import { DbService } from "src/db/db.service";
 import { UserModel } from "./user.model";
 
@@ -8,17 +8,35 @@ import { UserModel } from "./user.model";
 export class UserRepository {
   constructor(private readonly dbService: DbService) {}
 
-  async createUser(createUserDto: CreateUserDto): Promise<UserModel> {
+  async createUser(createUserDto: CreateUserDto, salt: string): Promise<UserResponseDto> {
     const { name, email, password } = createUserDto;
-    const sql = `INSERT INTO user (name, email, password, salt) VALUES (${name}, ${email}, ${password}, ${"salt"})`;
-  
-    const [rows] = await this.dbService.getPool().query(sql);
-    const result = rows as { insertId: number }[];
-    
-    console.log(result);
+    const sql = `INSERT INTO user (name, email, password, salt) VALUES ('${name}', '${email}', '${password}', '${salt}')`;
+      try {
+      const [rows] = await this.dbService.getPool().query(sql);
+      const result = rows as { insertId?: number };
+      
+      if (!result) {
+        throw new InternalServerErrorException('User could not be created');
+      }
 
-    return new UserModel(1, "name", "email", "password");
+      console.log(result);
+    return {
+        id: result.insertId,
+        name,
+        email
+      } as UserResponseDto;
+
+  } catch (error) {
+
+    const code = (error as { code?: string }).code;
+    const message = (error as { message?: string }).message;
+
+    if (code === 'ER_DUP_ENTRY') {
+      throw new InternalServerErrorException('Email already in use');
+    }
+    throw new InternalServerErrorException(message);
   }
+}
 
   async findByEmail(email: string): Promise<UserModel> {
 
