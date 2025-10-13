@@ -1,5 +1,5 @@
 /* eslint-disable prettier/prettier */
-import { Controller, Get, HttpStatus, InternalServerErrorException, NotFoundException, Param, ParseFilePipeBuilder, Post, Res, StreamableFile, UploadedFile, UseGuards, UseInterceptors } from '@nestjs/common';
+import { Controller, Get,  InternalServerErrorException, NotFoundException, Param, Post, Res, StreamableFile, UnprocessableEntityException, UploadedFile, UseGuards, UseInterceptors } from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { ApiResponse, ApiTags, ApiConsumes, ApiBody, ApiParam, ApiOperation, ApiBearerAuth } from '@nestjs/swagger';
 import { createReadStream, existsSync } from 'fs';
@@ -36,23 +36,20 @@ export class FileController {
         storage: diskStorage({
             destination: join(__dirname, '..', '..','public','uploads'),
             filename: (req, file, cb) => {
-                const name = file.originalname.replace(" ", "_");
-                cb(null, `${Date.now()}_${name}`);
-            },
-        })
+                const uniqueSuffix = Date.now() + Math.round(Math.random() * 1E9);
+                cb(null, file.fieldname + "-" + uniqueSuffix + join('-', file.originalname.replace(/\s+/g, '_')));
+            },  
+        }),
+        limits: { fileSize: 5 * 1024 * 1024 }, // 5 MB file size limit
+        fileFilter: (req, file, cb) => {
+            if (!file.mimetype.match(/\/(jpg|jpeg|png|gif)$/)) {
+                cb(new UnprocessableEntityException(`${file.mimetype} is not a supported type`), false);
+            } else {
+                cb(null, true);
+            }
+        },
     }))
-    uploadFile(@UploadedFile(
-        new ParseFilePipeBuilder()
-            .addFileTypeValidator({
-                fileType: 'jpg|jpeg|png|gif',
-            })
-            .addMaxSizeValidator({
-                maxSize: 1024 * 1024 * 5, // 5MB
-            })
-            .build({
-                errorHttpStatusCode: HttpStatus.UNPROCESSABLE_ENTITY,
-            }),
-    ) file: Express.Multer.File) {
+    uploadFile(@UploadedFile() file: Express.Multer.File) {
         return { filename: file.filename, path: `/public/uploads/${file.filename}` };
     }
 
@@ -77,7 +74,7 @@ export class FileController {
             const file = createReadStream(filePath);
 
             res.set({
-                'Content-type': 'aplication/octet-stream',
+                'Content-type': 'application/octet-stream',
             });
             return new StreamableFile(file);
 

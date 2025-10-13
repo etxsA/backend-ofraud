@@ -19,7 +19,6 @@ export class UserRepository {
         throw new InternalServerErrorException('User could not be created');
       }
 
-      console.log(result);
     return {
         id: result.insertId,
         name,
