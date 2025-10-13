@@ -55,15 +55,17 @@ export class UserRepository {
 
   async updateUser(updateUserDto: UpdateUserDto, profile: UserProfile): Promise<UpdateUserResponseDto> {
 
+    // Ensure user exists and has permission to update
     const user = await this.findById(updateUserDto.id)
       if (!user) {
         throw new NotFoundException('User not found');
       }
-      if (!(profile.admin ?? false)  || profile.id !== user.id) {
+      if (profile.id !== user.id || (profile.id !== user.id && !(profile.admin ?? false))) {
         throw new ForbiddenException('You do not have permission to update this user');
       }
     
     
+    // Build the SQL update query dynamically based on provided fields
     const fields: string[] = [];
     if (updateUserDto.name) {
       fields.push(`name = '${updateUserDto.name}'`);
@@ -78,6 +80,7 @@ export class UserRepository {
       fields.push(`profile_pic_url = '${updateUserDto.profile_pic_url}'`);
     }
 
+    // If no fields to update, throw an error
     if (fields.length === 0) {
       throw new InternalServerErrorException('No fields to update');
     }
