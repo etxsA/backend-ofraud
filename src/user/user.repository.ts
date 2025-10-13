@@ -1,8 +1,9 @@
 /* eslint-disable prettier/prettier */
-import { CreateUserDto, UserResponseDto} from "./user.dto";
-import { Injectable, InternalServerErrorException } from "@nestjs/common";
+import { CreateUserDto, UpdateUserDto, UpdateUserResponseDto, UserResponseDto} from "./user.dto";
+import { ForbiddenException, HttpException, HttpStatus, Injectable, InternalServerErrorException, NotFoundException, UnauthorizedException } from "@nestjs/common";
 import { DbService } from "src/db/db.service";
 import { UserModel } from "./user.model";
+import { UserProfile } from "src/auth/tokens.interface";
 
 @Injectable()
 export class UserRepository {
@@ -50,5 +51,59 @@ export class UserRepository {
     const [rows] = await this.dbService.getPool().query(sql);
     const users = rows as UserModel[];
     return users[0];
+  }
+
+  async updateUser(updateUserDto: UpdateUserDto, profile: UserProfile): Promise<UpdateUserResponseDto> {
+
+    const user = await this.findById(updateUserDto.id)
+      if (!user) {
+        throw new NotFoundException('User not found');
+      }
+      if (!(profile.admin ?? false)  || profile.id !== user.id) {
+        throw new ForbiddenException('You do not have permission to update this user');
+      }
+    
+    
+    const fields: string[] = [];
+    if (updateUserDto.name) {
+      fields.push(`name = '${updateUserDto.name}'`);
+    }
+    if (updateUserDto.email) {
+      fields.push(`email = '${updateUserDto.email}'`);
+    }
+    if (updateUserDto.password) {
+      fields.push(`password = '${updateUserDto.password}'`);
+    }
+    if (updateUserDto.profile_pic_url) {
+      fields.push(`profile_pic_url = '${updateUserDto.profile_pic_url}'`);
+    }
+
+    if (fields.length === 0) {
+      throw new InternalServerErrorException('No fields to update');
+    }
+
+    const sql = `UPDATE user SET ${fields.join(', ')} WHERE id = ${updateUserDto.id}`;
+    try {
+      const [result] = await this.dbService.getPool().query(sql);
+      const updateResult = result as { affectedRows?: number };
+
+      if (updateResult.affectedRows === 0) {
+        throw new InternalServerErrorException('User not found or no changes made');
+      }
+
+      const updatedUser = await this.findById(updateUserDto.id);
+      if (!updatedUser) {
+        throw new InternalServerErrorException('User not found after update');
+      }
+
+      return {
+        id: updatedUser.id,
+        name: updatedUser.name,
+        email: updatedUser.email
+      } as UserResponseDto;
+    } catch (error) {
+      const message = (error as { message?: string }).message;
+      throw new InternalServerErrorException(message);
+    }
   }
 }

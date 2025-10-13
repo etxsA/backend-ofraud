@@ -1,10 +1,11 @@
 /* eslint-disable prettier/prettier */
 import { Injectable, UnauthorizedException } from "@nestjs/common";
-import { CreateUserDto, UserResponseDto } from "./user.dto";
+import { CreateUserDto, UpdateUserDto, UpdateUserResponseDto, UserResponseDto } from "./user.dto";
 import { UserRepository } from "./user.repository";
 import { LoginDto } from "src/auth/auth.dto";
 import { UserModel } from "./user.model";
 import { hashPassword } from "src/util/hash.util";
+import { UserProfile } from "src/auth/tokens.interface";
 
 @Injectable()
 
@@ -44,4 +45,15 @@ export class UserService {
     async findByEmail(email: string): Promise<UserModel> {
         return this.userRepository.findByEmail(email);
     }
+
+    async updateUser(updateUserDto: UpdateUserDto, profile: UserProfile): Promise<UpdateUserResponseDto> {
+        if (updateUserDto.password) {
+            const salt = 'salt'; // Change this to a proper salt generation
+            const hashedPassword = hashPassword(updateUserDto.password, salt);
+            updateUserDto.password = hashedPassword;
+        }
+
+        return this.userRepository.updateUser(updateUserDto, profile);
+    }
+
 }
