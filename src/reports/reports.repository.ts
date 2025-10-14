@@ -13,28 +13,17 @@ export class ReportRepository {
 
   async createReport(createReportDto: CreateReportDto, user: UserProfile): Promise<ReportResponseDto> {
     const { title, description, report_pic_url, category_id, reference_url } = createReportDto;
-
-
     const sql = `INSERT INTO report (title, description, report_pic_url, category_id, user_id, reference_url, status_id, creation_date) VALUES (?, ?, ?, ?, ?, ?, ?, ?)`;
-
+    
     try {
-      const [rows] = await this.dbService.getPool().query(sql, [
-        title,
-        description,
-        report_pic_url,
-        category_id,
-        user.id,
-        reference_url,
-        1, // SUBMITED
-        new Date() 
-      ]);
+      const [rows] = await this.dbService.getPool().query(sql, [title, description, report_pic_url, category_id, user.id, reference_url, 1, new Date()]);
       const result = rows as { insertId?: number };
       
       if (!result || !result.insertId) {
         throw new InternalServerErrorException('Report could not be created');
       }
 
-      const newReport: ReportResponseDto = await this.findById(result.insertId);
+      const newReport = await this.findById(result.insertId);
       return newReport;
 
     } catch (error) {
@@ -48,6 +37,13 @@ export class ReportRepository {
     const [rows] = await this.dbService.getPool().query(sql);
     const reports = rows as ReportModel[];
     return reports;
+  }
+
+  async findPaginated(page: number, limit: number): Promise<ReportModel[]> {
+    const offset = (page - 1) * limit;
+    const sql = `SELECT * FROM report WHERE deleted_at IS NULL LIMIT ? OFFSET ?`;
+    const [rows] = await this.dbService.getPool().query(sql, [limit, offset]);
+    return rows as ReportModel[];
   }
 
   async findById(id: number): Promise<ReportModel> {

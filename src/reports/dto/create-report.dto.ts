@@ -57,5 +57,6 @@ export class CreateReportDto {
   })
   @IsNumber()
   @IsNotEmpty()
+  @IsOptional()
   status_id: number;
 }

@@ -17,18 +17,22 @@ export class ReportsService {
   }
 
   findAll() {
-    return `This action returns all reports`;
+    return this.reportRepository.findAll();
+  }
+
+  findPaginated(page: number, limit: number) {
+    return this.reportRepository.findPaginated(page, limit);
   }
 
   findOne(id: number) {
-    return `This action returns a #${id} report`;
+    return this.reportRepository.findById(id);
   }
 
-  update(id: number, updateReportDto: UpdateReportDto) {
-    return `This action updates a #${id} report`;
+  update(id: number, updateReportDto: UpdateReportDto, user: UserProfile) {
+    return this.reportRepository.updateReport(id, updateReportDto, user);
   }
 
-  remove(id: number) {
-    return `This action removes a #${id} report`;
+  remove(id: number, user: UserProfile) {
+    return this.reportRepository.deleteReport(id, user);
   }
 }
