@@ -9,6 +9,7 @@ import { JwtModule } from '@nestjs/jwt';
 import { FileModule } from './file/file.module';
 import { TokensService } from './auth/tokens.service';
 import { ReportsModule } from './reports/reports.module';
+import { CategoryModule } from './category/category.module';
 
 @Module({
   imports: [
@@ -21,6 +22,7 @@ import { ReportsModule } from './reports/reports.module';
     AuthModule,
     FileModule,
     ReportsModule,
+    CategoryModule,
   ],
   controllers: [AppController],
   providers: [AppService, TokensService],

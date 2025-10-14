@@ -25,8 +25,8 @@ export class ReportRepository {
         category_id,
         user.id,
         reference_url,
-        1,
-        new Date() // This will insert a JS Date object, which most SQL drivers convert to a proper DATETIME/DATE type
+        1, // SUBMITED
+        new Date() 
       ]);
       const result = rows as { insertId?: number };
       
