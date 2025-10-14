@@ -11,17 +11,17 @@ import {
 import { CategoryService } from './category.service';
 import { CreateCategoryDto } from './dto/create-category.dto';
 import { UpdateCategoryDto } from './dto/update-category.dto';
-import { JwtAuthGuard } from 'src/common/guards/jwt-auth.guard';
 import {
   ApiBearerAuth,
   ApiOperation,
   ApiResponse,
   ApiTags,
 } from '@nestjs/swagger';
+import { AdminGuard } from 'src/common/guards/admin.guard';
 
-@ApiTags('Enpoints for category management')
+@ApiTags('Endpoints for category management, only accessible by admins')
 @Controller('category')
-@UseGuards(JwtAuthGuard)
+@UseGuards(AdminGuard)
 @ApiBearerAuth()
 export class CategoryController {
   constructor(private readonly categoryService: CategoryService) {}
@@ -91,11 +91,12 @@ export class CategoryController {
     },
   })
   @ApiResponse({ status: 404, description: 'Category not found.' })
+  @ApiResponse({ status: 400, description: 'Invalid category ID.' })
   update(
     @Param('id') id: string,
     @Body() updateCategoryDto: UpdateCategoryDto,
   ) {
-    return this.categoryService.update(+id, updateCategoryDto);
+    return this.categoryService.update(Number(id), updateCategoryDto);
   }
 
   @Delete(':id')

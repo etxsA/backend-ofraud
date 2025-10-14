@@ -1,5 +1,5 @@
 /* eslint-disable prettier/prettier */
-import { Injectable, InternalServerErrorException, NotFoundException } from "@nestjs/common";
+import { BadRequestException, Injectable, InternalServerErrorException, NotFoundException } from "@nestjs/common";
 import { DbService } from "src/db/db.service";
 import { CreateCategoryDto } from "./dto/create-category.dto";
 import { CategoryModel } from "./entities/category.model";
@@ -46,6 +46,9 @@ export class CategoryRepository {
             throw new NotFoundException('Category not found');
         }
 
+        if(Number.isNaN(id)) {
+            throw new BadRequestException('Invalid category ID');
+        }
         const fields: string[] = [];
         const values: (string | number)[] = [];
 
