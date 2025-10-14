@@ -10,6 +10,7 @@ import { FileModule } from './file/file.module';
 import { TokensService } from './auth/tokens.service';
 import { ReportsModule } from './reports/reports.module';
 import { CategoryModule } from './category/category.module';
+import { StatusModule } from './status/status.module';
 
 @Module({
   imports: [
@@ -23,6 +24,7 @@ import { CategoryModule } from './category/category.module';
     FileModule,
     ReportsModule,
     CategoryModule,
+    StatusModule,
   ],
   controllers: [AppController],
   providers: [AppService, TokensService],
