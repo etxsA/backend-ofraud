@@ -1,5 +1,5 @@
 /* eslint-disable prettier/prettier */
-import { Body, Controller, Delete, Param, Post, Put, Req, UseGuards,  } from "@nestjs/common";
+import { Body, Controller, Delete, Param, Patch, Post,  Req, UseGuards,  } from "@nestjs/common";
 import { CreateUserDto, DeleteUserResponseDto, UpdateUserDto, UpdateUserResponseDto,  UserResponseDto } from "./user.dto";
 import { UserService } from "./user.service";
 import { ApiBearerAuth, ApiOperation, ApiResponse, ApiTags } from "@nestjs/swagger";
@@ -19,10 +19,10 @@ export class UserController {
         return this.userService.createUser(createUserDto);
     }
 
-    @Put()
+    @Patch()
     @UseGuards(JwtAuthGuard)
     @ApiBearerAuth()
-    @ApiOperation({ summary: 'Update user by id, only byt adming and by iteself' })
+    @ApiOperation({ summary: 'Update user by id, only by admin and by iteself' })
     @ApiResponse({ status: 200, description: 'The user has been updated.'})
     @ApiResponse({ status: 401, description: 'Unauthorized' ,  example: {
         message: "Invalid token",

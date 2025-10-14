@@ -1,5 +1,4 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { inherits } from 'util';
 
 export class userDto {
   @ApiProperty({ example: 'Jose Torres', description: 'Name of the user' })
