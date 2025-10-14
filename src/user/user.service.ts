@@ -3,7 +3,7 @@ import { Injectable, UnauthorizedException } from "@nestjs/common";
 import { CreateUserDto, DeleteUserResponseDto, UpdateUserDto, UpdateUserResponseDto, UserResponseDto } from "./user.dto";
 import { UserRepository } from "./user.repository";
 import { LoginDto } from "src/auth/auth.dto";
-import { UserModel } from "./user.model";
+import { UserModel } from "./entities/user.model";
 import { hashPassword } from "src/util/hash.util";
 import { UserProfile } from "src/auth/tokens.interface";
 

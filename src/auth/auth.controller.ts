@@ -2,7 +2,7 @@
 import { Body, Controller, Get, Post, Req, UnauthorizedException, UseGuards } from '@nestjs/common';
 import { UserService } from 'src/user/user.service';
 import { LoginDto } from './auth.dto';
-import { UserModel } from 'src/user/user.model';
+import { UserModel } from 'src/user/entities/user.model';
 import { TokensService } from './tokens.service';
 import { JwtAuthGuard } from 'src/common/guards/jwt-auth.guard';
 import type { AuthenticatedRequest } from 'src/interfaces/authenticated_request';

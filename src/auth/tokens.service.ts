@@ -1,7 +1,7 @@
 /* eslint-disable prettier/prettier */
 import { Injectable } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
-import { UserModel } from 'src/user/user.model';
+import { UserModel } from 'src/user/entities/user.model';
 import { AccessPayload, RefreshPayload } from './tokens.interface';
 
 @Injectable()

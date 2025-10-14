@@ -2,7 +2,7 @@
 import { CreateUserDto, DeleteUserResponseDto, UpdateUserDto, UpdateUserResponseDto, UserResponseDto} from "./user.dto";
 import { ForbiddenException, HttpException, HttpStatus, Injectable, InternalServerErrorException, NotFoundException, UnauthorizedException } from "@nestjs/common";
 import { DbService } from "src/db/db.service";
-import { UserModel } from "./user.model";
+import { UserModel } from "./entities/user.model";
 import { UserProfile } from "src/auth/tokens.interface";
 
 @Injectable()
