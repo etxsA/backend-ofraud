@@ -14,6 +14,7 @@ import { StatusModule } from './status/status.module';
 import { LikeModule } from './like/like.module';
 import { CommentModule } from './comment/comment.module';
 import { CommentLikeModule } from './comment-like/comment-like.module';
+import { StatsModule } from './stats/stats.module';
 
 @Module({
   imports: [
@@ -31,6 +32,7 @@ import { CommentLikeModule } from './comment-like/comment-like.module';
     LikeModule,
     CommentModule,
     CommentLikeModule,
+    StatsModule,
   ],
   controllers: [AppController],
   providers: [AppService, TokensService],
