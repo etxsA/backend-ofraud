@@ -16,6 +16,10 @@ export class CommentService {
     return this.commentRepository.findByReportIdWithLikes(report_id);
   }
 
+  findThreadsByReportId(report_id: number) {
+    return this.commentRepository.findThreadsByReportId(report_id);
+  }
+
   update(id: number, updateCommentDto: UpdateCommentDto, user: UserProfile) {
     return this.commentRepository.update(id, updateCommentDto, user);
   }

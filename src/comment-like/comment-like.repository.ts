@@ -42,6 +42,9 @@ export class CommentLikeRepository {
             }
             return { user_id: user.id, comment_id };
         } catch (error) {
+            if (error instanceof NotFoundException) {
+                throw error;
+            }
             throw new InternalServerErrorException((error as Error).message);
         }
     }

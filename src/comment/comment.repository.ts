@@ -66,6 +66,36 @@ export class CommentRepository {
     return rows as CommentResponseDto[];
   }
 
+  async findThreadsByReportId(
+    report_id: number,
+  ): Promise<CommentResponseDto[]> {
+    const comments = await this.findByReportIdWithLikes(report_id);
+    const commentMap = new Map<number, CommentResponseDto>();
+    comments.forEach((comment) => {
+      comment.children = [];
+      commentMap.set(comment.id, comment);
+    });
+
+    const rootComments: CommentResponseDto[] = [];
+    comments.forEach((comment) => {
+      if (comment.parent_comment_id) {
+        const parent = commentMap.get(comment.parent_comment_id);
+        if (parent) {
+          if (!parent.children) {
+            parent.children = [];
+          }
+          parent.children.push(comment);
+        } else {
+          rootComments.push(comment);
+        }
+      } else {
+        rootComments.push(comment);
+      }
+    });
+
+    return rootComments;
+  }
+
   async update(
     id: number,
     updateCommentDto: UpdateCommentDto,
