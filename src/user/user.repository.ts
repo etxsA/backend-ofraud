@@ -1,6 +1,6 @@
 /* eslint-disable prettier/prettier */
 import { CreateUserDto, DeleteUserResponseDto, UpdateUserDto, UpdateUserResponseDto, UserResponseDto} from "./user.dto";
-import { ForbiddenException, HttpException, HttpStatus, Injectable, InternalServerErrorException, NotFoundException, UnauthorizedException } from "@nestjs/common";
+import { ForbiddenException, Injectable, InternalServerErrorException, NotFoundException } from "@nestjs/common";
 import { DbService } from "src/db/db.service";
 import { UserModel } from "./entities/user.model";
 import { UserProfile } from "src/auth/tokens.interface";
@@ -11,7 +11,7 @@ export class UserRepository {
 
   async createUser(createUserDto: CreateUserDto, salt: string): Promise<UserResponseDto> {
     const { name, email, password } = createUserDto;
-    const sql = `INSERT INTO user (name, email, password, salt) VALUES ('${name}', '${email}', '${password}', '${salt}')`;
+    const sql = `INSERT INTO user (name, email, password, salt, creation_date) VALUES ('${name}', '${email}', '${password}', '${salt}', '${new Date().toDateString()}')`;
       try {
       const [rows] = await this.dbService.getPool().query(sql);
       const result = rows as { insertId?: number };
