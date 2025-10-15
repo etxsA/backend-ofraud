@@ -11,6 +11,7 @@ import { TokensService } from './auth/tokens.service';
 import { ReportsModule } from './reports/reports.module';
 import { CategoryModule } from './category/category.module';
 import { StatusModule } from './status/status.module';
+import { LikeModule } from './like/like.module';
 
 @Module({
   imports: [
@@ -25,6 +26,7 @@ import { StatusModule } from './status/status.module';
     ReportsModule,
     CategoryModule,
     StatusModule,
+    LikeModule,
   ],
   controllers: [AppController],
   providers: [AppService, TokensService],
