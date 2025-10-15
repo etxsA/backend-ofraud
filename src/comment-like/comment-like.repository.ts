@@ -11,14 +11,22 @@ export class CommentLikeRepository {
 
     async create(createCommentLikeDto: CreateCommentLikeDto, user: UserProfile): Promise<CommentLike> {
         const { comment_id } = createCommentLikeDto;
-        const sql = 'INSERT INTO `comment_like` (user_id, comment_id, creation_date) VALUES (?, ?, ?)';
+        const checkSql = 'SELECT 1 FROM `comment_like` WHERE user_id = ? AND comment_id = ? LIMIT 1';
+        const insertSql = 'INSERT INTO `comment_like` (user_id, comment_id, creation_date) VALUES (?, ?, ?)';
         try {
+            const [rows] = await this.dbService.getPool().query(checkSql, [user.id, comment_id]);
+            if ((rows as any[]).length > 0) {
+                throw new ConflictException('You have already liked this comment');
+            }
             const creation_date = new Date();
-            await this.dbService.getPool().query(sql, [user.id, comment_id, creation_date]);
+            await this.dbService.getPool().query(insertSql, [user.id, comment_id, creation_date]);
             return { user_id: user.id, comment_id, creation_date };
         } catch (error) {
-            if ((error as { code?: string }).code === 'ER_DUP_ENTRY') {
-                throw new ConflictException('You have already liked this comment');
+            if (error instanceof ConflictException) {
+                throw error;
+            }
+            if (error instanceof NotFoundException) {
+                throw error;
             }
             throw new InternalServerErrorException((error as Error).message);
         }

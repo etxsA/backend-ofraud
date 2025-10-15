@@ -41,6 +41,10 @@ export class CommentLikeController {
   @ApiResponse({
     status: 409,
     description: 'You have already liked this comment.',
+    example: {
+      message: 'You have already liked this comment',
+      statusCode: 409,
+    },
   })
   @ApiResponse({ status: 401, description: 'Unauthorized.' })
   create(

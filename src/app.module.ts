@@ -12,6 +12,8 @@ import { ReportsModule } from './reports/reports.module';
 import { CategoryModule } from './category/category.module';
 import { StatusModule } from './status/status.module';
 import { LikeModule } from './like/like.module';
+import { CommentModule } from './comment/comment.module';
+import { CommentLikeModule } from './comment-like/comment-like.module';
 
 @Module({
   imports: [
@@ -27,6 +29,8 @@ import { LikeModule } from './like/like.module';
     CategoryModule,
     StatusModule,
     LikeModule,
+    CommentModule,
+    CommentLikeModule,
   ],
   controllers: [AppController],
   providers: [AppService, TokensService],
