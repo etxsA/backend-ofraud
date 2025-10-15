@@ -11,7 +11,7 @@ export class UserRepository {
 
   async createUser(createUserDto: CreateUserDto, salt: string): Promise<UserResponseDto> {
     const { name, email, password } = createUserDto;
-    const sql = `INSERT INTO user (name, email, password, salt, creation_date) VALUES ('${name}', '${email}', '${password}', '${salt}', '${new Date().toDateString()}')`;
+    const sql = `INSERT INTO user (name, email, password, salt, creation_date) VALUES ('${name}', '${email}', '${password}', '${salt}', '${new Date().toISOString().slice(0, 10)}')`;
       try {
       const [rows] = await this.dbService.getPool().query(sql);
       const result = rows as { insertId?: number };
