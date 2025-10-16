@@ -22,6 +22,7 @@ import {
   ApiTags,
 } from '@nestjs/swagger';
 import { AdminGuard } from 'src/common/guards/admin.guard';
+import { UpdateReportStatusDto } from './dto/update-report-status.dto';
 
 @ApiTags('Endpoints for report management')
 @Controller('reports')
@@ -168,6 +169,34 @@ export class ReportsController {
     @Req() req: AuthenticatedRequest,
   ) {
     return this.reportsService.update(+id, updateReportDto, req.user.profile);
+  }
+
+  @Patch(':id/accept')
+  @UseGuards(AdminGuard)
+  @ApiBearerAuth()
+  @ApiOperation({ summary: 'Accept a report (Admin only)' })
+  @ApiResponse({ status: 200, description: 'The report has been accepted.' })
+  @ApiResponse({ status: 404, description: 'Report not found.' })
+  @ApiResponse({ status: 403, description: 'Forbidden.' })
+  acceptReport(
+    @Param('id') id: string,
+    @Body() updateReportStatusDto: UpdateReportStatusDto,
+  ) {
+    return this.reportsService.acceptReport(+id, updateReportStatusDto);
+  }
+
+  @Patch(':id/reject')
+  @UseGuards(AdminGuard)
+  @ApiBearerAuth()
+  @ApiOperation({ summary: 'Reject a report (Admin only)' })
+  @ApiResponse({ status: 200, description: 'The report has been rejected.' })
+  @ApiResponse({ status: 404, description: 'Report not found.' })
+  @ApiResponse({ status: 403, description: 'Forbidden.' })
+  rejectReport(
+    @Param('id') id: string,
+    @Body() updateReportStatusDto: UpdateReportStatusDto,
+  ) {
+    return this.reportsService.rejectReport(+id, updateReportStatusDto);
   }
 
   @Delete(':id')

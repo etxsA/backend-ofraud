@@ -119,6 +119,27 @@ export class ReportRepository {
       throw new InternalServerErrorException(message);
     }
   }
+
+  async updateReportStatus(id: number, status_id: number): Promise<ReportModel> {
+    const report = await this.findById(id);
+    if (!report) {
+      throw new NotFoundException('Report not found');
+    }
+
+    const sql = `UPDATE report SET status_id = ? WHERE id = ?`;
+    try {
+      const [result] = await this.dbService.getPool().query(sql, [status_id, id]);
+      const updateResult = result as { affectedRows?: number };
+
+      if (updateResult.affectedRows === 0) {
+        throw new InternalServerErrorException('Report not found or status not updated');
+      }
+
+      return this.findById(id);
+    } catch (error) {
+      throw new InternalServerErrorException((error as Error).message);
+    }
+  }
   
   async deleteReport(id: number, profile: UserProfile): Promise<DeleteReportResponseDto> {
     const report = await this.findById(id);
