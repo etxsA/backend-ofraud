@@ -37,8 +37,10 @@ export class FileController {
             destination: join(__dirname, '..', '..','public','uploads'),
             filename: (req, file, cb) => {
                 const uniqueSuffix = Date.now() + Math.round(Math.random() * 1E9);
-                cb(null, file.fieldname + "-" + uniqueSuffix + join('-', file.originalname.replace(/\s+/g, '_')));
-            },  
+                const finalName = file.fieldname + "-" + uniqueSuffix + '-' + file.originalname.replace(/\s+/g, '_');
+                console.log(file.originalname);
+                cb(null, finalName);
+            },
         }),
         limits: { fileSize: 5 * 1024 * 1024 }, // 5 MB file size limit
         fileFilter: (req, file, cb) => {
@@ -54,9 +56,7 @@ export class FileController {
     }
 
     @Get('download/:filename')
-    @UseGuards(JwtAuthGuard)
     @ApiOperation({ summary: 'Download a protected file by its filename' })
-    @ApiBearerAuth() 
     @ApiResponse({ status: 401, description: 'Unauthorized. Token is missing or invalid.' , example: {
         message: "No token provided",
         error: "Unauthorized",
@@ -79,7 +79,6 @@ export class FileController {
 
             res.set({
                 'Content-type': 'application/octet-stream',
-                'Content-Disposition': `attachment; filename="${filename}"`,
             });
             return new StreamableFile(file);
 
