@@ -46,6 +46,12 @@ export class ReportRepository {
     return rows as ReportModel[];
   }
 
+  async findByStatus(statusId: number): Promise<ReportModel[]> {
+    const sql = `SELECT * FROM report WHERE status_id = ? AND deleted_at IS NULL`;
+    const [rows] = await this.dbService.getPool().query(sql, [statusId]);
+    return rows as ReportModel[];
+  }
+
   async findById(id: number): Promise<ReportModel> {
     const sql = `SELECT * FROM report WHERE id = ? AND deleted_at IS NULL LIMIT 1`;
     const [rows] = await this.dbService.getPool().query(sql, [id]);

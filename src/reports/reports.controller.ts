@@ -114,6 +114,37 @@ export class ReportsController {
     return this.reportsService.findPaginated(+page, +limit);
   }
 
+  @Get('status/:statusId')
+  @UseGuards(JwtAuthGuard)
+  @ApiBearerAuth()
+  @ApiOperation({ summary: 'Get reports by status' })
+  @ApiResponse({
+    status: 200,
+    description: 'Return reports by status.',
+    example: [
+      {
+        id: 1,
+        title: 'Report Title',
+        description: 'Report Description',
+        report_pic_url: 'http://example.com/pic.jpg',
+        category_id: 2,
+        user_id: 1,
+        reference_url: 'http://example.com',
+        creation_date: '2025-10-14T00:00:00.000Z',
+        status_id: 1,
+        deleted_at: null,
+      },
+    ],
+  })
+  @ApiResponse({
+    status: 404,
+    description: 'No reports found with this status.',
+  })
+  @ApiResponse({ status: 401, description: 'Unauthorized.' })
+  findByStatus(@Param('statusId') statusId: string) {
+    return this.reportsService.findByStatus(+statusId);
+  }
+
   @Get(':id')
   @UseGuards(JwtAuthGuard)
   @ApiBearerAuth()

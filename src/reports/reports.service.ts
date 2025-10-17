@@ -25,6 +25,10 @@ export class ReportsService {
     return this.reportRepository.findPaginated(page, limit);
   }
 
+  findByStatus(statusId: number) {
+    return this.reportRepository.findByStatus(statusId);
+  }
+
   findOne(id: number) {
     return this.reportRepository.findById(id);
   }
