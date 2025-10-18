@@ -11,6 +11,20 @@ import { UserProfile } from 'src/auth/tokens.interface';
 import { UpdateCommentDto } from './dto/update-comment.dto';
 import { CommentResponseDto } from './dto/comment-response.dto';
 
+interface CommentWithUserRow {
+  id: number;
+  content: string;
+  user_id: number;
+  report_id: number;
+  parent_comment_id?: number;
+  creation_date: Date;
+  deleted_at?: Date;
+  likes: number;
+  user_name: string;
+  user_email: string;
+  user_profilePic?: string;
+}
+
 @Injectable()
 export class CommentRepository {
   constructor(private readonly dbService: DbService) {}
@@ -56,14 +70,25 @@ export class CommentRepository {
     report_id: number,
   ): Promise<CommentResponseDto[]> {
     const sql = `
-            SELECT c.*, COUNT(cl.user_id) as likes
+            SELECT c.*, COUNT(cl.user_id) as likes,
+                   u.id as user_id, u.name as user_name, u.email as user_email, u.profilePic as user_profilePic
             FROM \`comment\` c
             LEFT JOIN \`comment_like\` cl ON c.id = cl.comment_id
+            LEFT JOIN \`user\` u ON c.user_id = u.id
             WHERE c.report_id = ? AND c.deleted_at IS NULL
             GROUP BY c.id
         `;
     const [rows] = await this.dbService.getPool().query(sql, [report_id]);
-    return rows as CommentResponseDto[];
+    const comments = rows as CommentWithUserRow[];
+    return comments.map((comment) => ({
+      ...comment,
+      user: {
+        id: comment.user_id,
+        name: comment.user_name,
+        email: comment.user_email,
+        profilePic: comment.user_profilePic,
+      },
+    }));
   }
 
   async findThreadsByReportId(
@@ -100,28 +125,50 @@ export class CommentRepository {
     report_id: number,
   ): Promise<CommentResponseDto[]> {
     const sql = `
-        SELECT c.*, COUNT(cl.user_id) as likes
+        SELECT c.*, COUNT(cl.user_id) as likes,
+               u.id as user_id, u.name as user_name, u.email as user_email, u.profilePic as user_profilePic
         FROM \`comment\` c
         LEFT JOIN \`comment_like\` cl ON c.id = cl.comment_id
+        LEFT JOIN \`user\` u ON c.user_id = u.id
         WHERE c.report_id = ? AND c.parent_comment_id IS NULL AND c.deleted_at IS NULL
         GROUP BY c.id
     `;
     const [rows] = await this.dbService.getPool().query(sql, [report_id]);
-    return rows as CommentResponseDto[];
+    const comments = rows as CommentWithUserRow[];
+    return comments.map((comment) => ({
+      ...comment,
+      user: {
+        id: comment.user_id,
+        name: comment.user_name,
+        email: comment.user_email,
+        profilePic: comment.user_profilePic,
+      },
+    }));
   }
 
   async findChildrenByCommentId(
     comment_id: number,
   ): Promise<CommentResponseDto[]> {
     const sql = `
-        SELECT c.*, COUNT(cl.user_id) as likes
+        SELECT c.*, COUNT(cl.user_id) as likes,
+               u.id as user_id, u.name as user_name, u.email as user_email, u.profilePic as user_profilePic
         FROM \`comment\` c
         LEFT JOIN \`comment_like\` cl ON c.id = cl.comment_id
+        LEFT JOIN \`user\` u ON c.user_id = u.id
         WHERE c.parent_comment_id = ? AND c.deleted_at IS NULL
         GROUP BY c.id
     `;
     const [rows] = await this.dbService.getPool().query(sql, [comment_id]);
-    return rows as CommentResponseDto[];
+    const comments = rows as CommentWithUserRow[];
+    return comments.map((comment) => ({
+      ...comment,
+      user: {
+        id: comment.user_id,
+        name: comment.user_name,
+        email: comment.user_email,
+        profilePic: comment.user_profilePic,
+      },
+    }));
   }
 
   async update(
