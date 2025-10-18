@@ -162,11 +162,11 @@ export class CommentController {
   }
 
   @Get(':id')
-  @ApiOperation({ summary: 'Get a comment by id' })
+  @ApiOperation({ summary: 'Get a comment by id with user information' })
   @ApiResponse({
     status: 200,
-    description: 'Return a comment by id.',
-    type: Comment,
+    description: 'Return a comment by id with embedded user information.',
+    type: CommentResponseDto,
     example: {
       id: 1,
       content: 'This is a comment.',
@@ -175,6 +175,13 @@ export class CommentController {
       parent_comment_id: null,
       creation_date: '2025-10-17T10:00:00.000Z',
       deleted_at: null,
+      likes: 5,
+      user: {
+        id: 2,
+        name: 'John Doe',
+        email: 'john@example.com',
+        profile_pic_url: 'https://example.com/profile.jpg',
+      },
     },
   })
   @ApiResponse({ status: 404, description: 'Comment not found.' })

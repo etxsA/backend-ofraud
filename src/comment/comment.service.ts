@@ -29,7 +29,7 @@ export class CommentService {
   }
 
   findOne(id: number) {
-    return this.commentRepository.findById(id);
+    return this.commentRepository.findByIdWithUser(id);
   }
 
   update(id: number, updateCommentDto: UpdateCommentDto, user: UserProfile) {
