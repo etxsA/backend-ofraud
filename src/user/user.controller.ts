@@ -88,6 +88,17 @@ export class UserController {
     return this.userService.findPaginated(+page, +limit);
   }
 
+  @Get('count')
+  @ApiOperation({ summary: 'Get the total number of users' })
+  @ApiResponse({
+    status: 200,
+    description: 'Return the total number of users.',
+    example: { count: 100 },
+  })
+  async countAll(): Promise<{ count: number }> {
+    return this.userService.countAll();
+  }
+
   @Patch()
   @UseGuards(JwtAuthGuard)
   @ApiBearerAuth()

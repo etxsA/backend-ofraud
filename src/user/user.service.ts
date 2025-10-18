@@ -59,6 +59,10 @@ export class UserService {
     return this.userRepository.findPaginated(page, limit);
   }
 
+  async countAll(): Promise<{ count: number }> {
+    return this.userRepository.countAll();
+  }
+
     async updateUser(updateUserDto: UpdateUserDto, profile: UserProfile): Promise<UpdateUserResponseDto> {
         if (updateUserDto.password) {
             const salt = 'salt'; // Change this to a proper salt generation

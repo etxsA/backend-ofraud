@@ -94,6 +94,13 @@ export class UserRepository {
     return rows as UserResponseDto[];
   }
 
+  async countAll(): Promise<{ count: number }> {
+    const sql = `SELECT COUNT(*) as count FROM user`;
+    const [rows] = await this.dbService.getPool().query(sql);
+    const countResult = rows as { count: number }[];
+    return countResult[0];
+  }
+
   async updateUser(updateUserDto: UpdateUserDto, profile: UserProfile): Promise<UpdateUserResponseDto> {
 
     // Ensure user exists and has permission to update
