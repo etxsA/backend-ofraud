@@ -4,7 +4,7 @@ export class CommentUserDto {
   id: number;
   name: string;
   email: string;
-  profilePic?: string;
+  profile_pic_url?: string;
 }
 
 export class CommentResponseDto extends Comment {

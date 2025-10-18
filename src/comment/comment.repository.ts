@@ -22,7 +22,7 @@ interface CommentWithUserRow {
   likes: number;
   user_name: string;
   user_email: string;
-  user_profilePic?: string;
+  user_profile_pic_url?: string;
 }
 
 @Injectable()
@@ -70,8 +70,8 @@ export class CommentRepository {
     report_id: number,
   ): Promise<CommentResponseDto[]> {
     const sql = `
-            SELECT c.*, COUNT(cl.user_id) as likes,
-                   u.id as user_id, u.name as user_name, u.email as user_email, u.profilePic as user_profilePic
+       SELECT c.*, COUNT(cl.user_id) as likes,
+         u.id as user_id, u.name as user_name, u.email as user_email, u.profile_pic_url as user_profile_pic_url
             FROM \`comment\` c
             LEFT JOIN \`comment_like\` cl ON c.id = cl.comment_id
             LEFT JOIN \`user\` u ON c.user_id = u.id
@@ -86,7 +86,7 @@ export class CommentRepository {
         id: comment.user_id,
         name: comment.user_name,
         email: comment.user_email,
-        profilePic: comment.user_profilePic,
+        profile_pic_url: comment.user_profile_pic_url,
       },
     }));
   }
@@ -125,8 +125,8 @@ export class CommentRepository {
     report_id: number,
   ): Promise<CommentResponseDto[]> {
     const sql = `
-        SELECT c.*, COUNT(cl.user_id) as likes,
-               u.id as user_id, u.name as user_name, u.email as user_email, u.profilePic as user_profilePic
+   SELECT c.*, COUNT(cl.user_id) as likes,
+     u.id as user_id, u.name as user_name, u.email as user_email, u.profile_pic_url as user_profile_pic_url
         FROM \`comment\` c
         LEFT JOIN \`comment_like\` cl ON c.id = cl.comment_id
         LEFT JOIN \`user\` u ON c.user_id = u.id
@@ -141,7 +141,7 @@ export class CommentRepository {
         id: comment.user_id,
         name: comment.user_name,
         email: comment.user_email,
-        profilePic: comment.user_profilePic,
+        profile_pic_url: comment.user_profile_pic_url,
       },
     }));
   }
@@ -150,8 +150,8 @@ export class CommentRepository {
     comment_id: number,
   ): Promise<CommentResponseDto[]> {
     const sql = `
-        SELECT c.*, COUNT(cl.user_id) as likes,
-               u.id as user_id, u.name as user_name, u.email as user_email, u.profilePic as user_profilePic
+   SELECT c.*, COUNT(cl.user_id) as likes,
+     u.id as user_id, u.name as user_name, u.email as user_email, u.profile_pic_url as user_profile_pic_url
         FROM \`comment\` c
         LEFT JOIN \`comment_like\` cl ON c.id = cl.comment_id
         LEFT JOIN \`user\` u ON c.user_id = u.id
@@ -166,7 +166,7 @@ export class CommentRepository {
         id: comment.user_id,
         name: comment.user_name,
         email: comment.user_email,
-        profilePic: comment.user_profilePic,
+        profile_pic_url: comment.user_profile_pic_url,
       },
     }));
   }
