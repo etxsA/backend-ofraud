@@ -81,7 +81,14 @@ export class CommentRepository {
     const [rows] = await this.dbService.getPool().query(sql, [report_id]);
     const comments = rows as CommentWithUserRow[];
     return comments.map((comment) => ({
-      ...comment,
+      id: comment.id,
+      content: comment.content,
+      user_id: comment.user_id,
+      report_id: comment.report_id,
+      parent_comment_id: comment.parent_comment_id,
+      creation_date: comment.creation_date,
+      deleted_at: comment.deleted_at,
+      likes: comment.likes,
       user: {
         id: comment.user_id,
         name: comment.user_name,
@@ -136,7 +143,14 @@ export class CommentRepository {
     const [rows] = await this.dbService.getPool().query(sql, [report_id]);
     const comments = rows as CommentWithUserRow[];
     return comments.map((comment) => ({
-      ...comment,
+      id: comment.id,
+      content: comment.content,
+      user_id: comment.user_id,
+      report_id: comment.report_id,
+      parent_comment_id: comment.parent_comment_id,
+      creation_date: comment.creation_date,
+      deleted_at: comment.deleted_at,
+      likes: comment.likes,
       user: {
         id: comment.user_id,
         name: comment.user_name,
@@ -161,7 +175,14 @@ export class CommentRepository {
     const [rows] = await this.dbService.getPool().query(sql, [comment_id]);
     const comments = rows as CommentWithUserRow[];
     return comments.map((comment) => ({
-      ...comment,
+      id: comment.id,
+      content: comment.content,
+      user_id: comment.user_id,
+      report_id: comment.report_id,
+      parent_comment_id: comment.parent_comment_id,
+      creation_date: comment.creation_date,
+      deleted_at: comment.deleted_at,
+      likes: comment.likes,
       user: {
         id: comment.user_id,
         name: comment.user_name,
