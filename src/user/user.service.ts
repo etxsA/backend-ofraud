@@ -51,6 +51,14 @@ export class UserService {
         return this.userRepository.findByEmail(email);
     }
 
+  async findAll(): Promise<UserResponseDto[]> {
+    return this.userRepository.findAll();
+  }
+
+  async findPaginated(page: number, limit: number): Promise<UserResponseDto[]> {
+    return this.userRepository.findPaginated(page, limit);
+  }
+
     async updateUser(updateUserDto: UpdateUserDto, profile: UserProfile): Promise<UpdateUserResponseDto> {
         if (updateUserDto.password) {
             const salt = 'salt'; // Change this to a proper salt generation

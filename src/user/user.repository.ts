@@ -81,6 +81,19 @@ export class UserRepository {
     return users[0];
   }
 
+  async findAll(): Promise<UserResponseDto[]> {
+    const sql = `SELECT id, name, email, profile_pic_url, admin, creation_date FROM user`;
+    const [rows] = await this.dbService.getPool().query(sql);
+    return rows as UserResponseDto[];
+  }
+
+  async findPaginated(page: number, limit: number): Promise<UserResponseDto[]> {
+    const offset = (page - 1) * limit;
+    const sql = `SELECT id, name, email, profile_pic_url, admin, creation_date FROM user LIMIT ? OFFSET ?`;
+    const [rows] = await this.dbService.getPool().query(sql, [limit, offset]);
+    return rows as UserResponseDto[];
+  }
+
   async updateUser(updateUserDto: UpdateUserDto, profile: UserProfile): Promise<UpdateUserResponseDto> {
 
     // Ensure user exists and has permission to update
