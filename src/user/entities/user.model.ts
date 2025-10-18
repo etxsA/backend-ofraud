@@ -10,6 +10,7 @@ export class UserModel {
     profilePic?: string
     admin?: boolean;
     update_date?: Date;
+    deleted_at?: Date;
     
 
     constructor(id: number, name: string, email: string, password: string) {

@@ -68,34 +68,34 @@ export class UserRepository {
 
   async findByEmail(email: string): Promise<UserModel> {
 
-    const sql = `SELECT * FROM user WHERE email = '${email}' LIMIT 1`;
+    const sql = `SELECT * FROM user WHERE email = '${email}' AND deleted_at IS NULL LIMIT 1`;
     const [rows] = await this.dbService.getPool().query(sql);
     const users = rows as UserModel[];
     return users[0];
   }
 
   async findById(id: number): Promise<UserModel> {
-    const sql = `SELECT * FROM user WHERE id = ${id} LIMIT 1`;
+    const sql = `SELECT * FROM user WHERE id = ${id} AND deleted_at IS NULL LIMIT 1`;
     const [rows] = await this.dbService.getPool().query(sql);
     const users = rows as UserModel[];
     return users[0];
   }
 
   async findAll(): Promise<UserResponseDto[]> {
-    const sql = `SELECT id, name, email, profile_pic_url, admin, creation_date FROM user`;
+    const sql = `SELECT id, name, email, profile_pic_url, admin, creation_date FROM user WHERE deleted_at IS NULL`;
     const [rows] = await this.dbService.getPool().query(sql);
     return rows as UserResponseDto[];
   }
 
   async findPaginated(page: number, limit: number): Promise<UserResponseDto[]> {
     const offset = (page - 1) * limit;
-    const sql = `SELECT id, name, email, profile_pic_url, admin, creation_date FROM user LIMIT ? OFFSET ?`;
+    const sql = `SELECT id, name, email, profile_pic_url, admin, creation_date FROM user WHERE deleted_at IS NULL LIMIT ? OFFSET ?`;
     const [rows] = await this.dbService.getPool().query(sql, [limit, offset]);
     return rows as UserResponseDto[];
   }
 
   async countAll(): Promise<{ count: number }> {
-    const sql = `SELECT COUNT(*) as count FROM user`;
+    const sql = `SELECT COUNT(*) as count FROM user WHERE deleted_at IS NULL`;
     const [rows] = await this.dbService.getPool().query(sql);
     const countResult = rows as { count: number }[];
     return countResult[0];
@@ -165,13 +165,13 @@ export class UserRepository {
     if (!user) {
       throw new NotFoundException('User not found');
     }
-    if (profile.id !== user.id || (profile.id !== user.id && !(profile.admin ?? false))) {
+    if (profile.id !== user.id && !(profile.admin ?? false)) {
       throw new ForbiddenException('You do not have permission to delete this user');
     }
     
-    const sql = `DELETE FROM user WHERE id = ${id}`;
+    const sql = `UPDATE user SET deleted_at = ? WHERE id = ?`;
     try {
-      const [result] = await this.dbService.getPool().query(sql);
+      const [result] = await this.dbService.getPool().query(sql, [new Date(), id]);
       const deleteResult = result as { affectedRows?: number };
       
       if (deleteResult.affectedRows === 0) {
