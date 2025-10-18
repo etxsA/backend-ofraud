@@ -161,6 +161,28 @@ export class CommentController {
     return this.commentService.findRootCommentsByReportId(+report_id);
   }
 
+  @Get(':id')
+  @ApiOperation({ summary: 'Get a comment by id' })
+  @ApiResponse({
+    status: 200,
+    description: 'Return a comment by id.',
+    type: Comment,
+    example: {
+      id: 1,
+      content: 'This is a comment.',
+      user_id: 2,
+      report_id: 1,
+      parent_comment_id: null,
+      creation_date: '2025-10-17T10:00:00.000Z',
+      deleted_at: null,
+    },
+  })
+  @ApiResponse({ status: 404, description: 'Comment not found.' })
+  @ApiResponse({ status: 401, description: 'Unauthorized.' })
+  findOne(@Param('id') id: string) {
+    return this.commentService.findOne(+id);
+  }
+
   @Get(':id/children')
   @ApiOperation({ summary: 'Get child comments for a comment' })
   @ApiResponse({

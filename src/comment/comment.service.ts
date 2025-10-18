@@ -28,6 +28,10 @@ export class CommentService {
     return this.commentRepository.findChildrenByCommentId(comment_id);
   }
 
+  findOne(id: number) {
+    return this.commentRepository.findById(id);
+  }
+
   update(id: number, updateCommentDto: UpdateCommentDto, user: UserProfile) {
     return this.commentRepository.update(id, updateCommentDto, user);
   }
