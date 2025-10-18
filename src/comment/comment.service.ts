@@ -20,6 +20,14 @@ export class CommentService {
     return this.commentRepository.findThreadsByReportId(report_id);
   }
 
+  findRootCommentsByReportId(report_id: number) {
+    return this.commentRepository.findRootCommentsByReportId(report_id);
+  }
+
+  findChildrenByCommentId(comment_id: number) {
+    return this.commentRepository.findChildrenByCommentId(comment_id);
+  }
+
   update(id: number, updateCommentDto: UpdateCommentDto, user: UserProfile) {
     return this.commentRepository.update(id, updateCommentDto, user);
   }

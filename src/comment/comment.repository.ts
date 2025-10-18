@@ -96,6 +96,34 @@ export class CommentRepository {
     return rootComments;
   }
 
+  async findRootCommentsByReportId(
+    report_id: number,
+  ): Promise<CommentResponseDto[]> {
+    const sql = `
+        SELECT c.*, COUNT(cl.user_id) as likes
+        FROM \`comment\` c
+        LEFT JOIN \`comment_like\` cl ON c.id = cl.comment_id
+        WHERE c.report_id = ? AND c.parent_comment_id IS NULL AND c.deleted_at IS NULL
+        GROUP BY c.id
+    `;
+    const [rows] = await this.dbService.getPool().query(sql, [report_id]);
+    return rows as CommentResponseDto[];
+  }
+
+  async findChildrenByCommentId(
+    comment_id: number,
+  ): Promise<CommentResponseDto[]> {
+    const sql = `
+        SELECT c.*, COUNT(cl.user_id) as likes
+        FROM \`comment\` c
+        LEFT JOIN \`comment_like\` cl ON c.id = cl.comment_id
+        WHERE c.parent_comment_id = ? AND c.deleted_at IS NULL
+        GROUP BY c.id
+    `;
+    const [rows] = await this.dbService.getPool().query(sql, [comment_id]);
+    return rows as CommentResponseDto[];
+  }
+
   async update(
     id: number,
     updateCommentDto: UpdateCommentDto,

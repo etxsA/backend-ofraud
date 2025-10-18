@@ -138,6 +138,52 @@ export class CommentController {
     return this.commentService.findThreadsByReportId(+report_id);
   }
 
+  @Get('report/:report_id/root')
+  @ApiOperation({ summary: 'Get root comments for a report' })
+  @ApiResponse({
+    status: 200,
+    description: 'Return root comments for a report.',
+    example: [
+      {
+        id: 1,
+        content: 'This is a root comment.',
+        user_id: 2,
+        report_id: 1,
+        parent_comment_id: null,
+        creation_date: '2025-10-15T10:00:00.000Z',
+        deleted_at: null,
+        likes: '10',
+      },
+    ],
+  })
+  @ApiResponse({ status: 401, description: 'Unauthorized.' })
+  findRootCommentsByReportId(@Param('report_id') report_id: string) {
+    return this.commentService.findRootCommentsByReportId(+report_id);
+  }
+
+  @Get(':id/children')
+  @ApiOperation({ summary: 'Get child comments for a comment' })
+  @ApiResponse({
+    status: 200,
+    description: 'Return child comments for a comment.',
+    example: [
+      {
+        id: 3,
+        content: 'This is a child comment.',
+        user_id: 4,
+        report_id: 1,
+        parent_comment_id: 1,
+        creation_date: '2025-10-15T10:05:00.000Z',
+        deleted_at: null,
+        likes: '3',
+      },
+    ],
+  })
+  @ApiResponse({ status: 401, description: 'Unauthorized.' })
+  findChildrenByCommentId(@Param('id') id: string) {
+    return this.commentService.findChildrenByCommentId(+id);
+  }
+
   @Patch(':id')
   @ApiOperation({ summary: 'Update a comment' })
   @ApiResponse({
