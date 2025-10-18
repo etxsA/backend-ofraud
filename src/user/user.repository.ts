@@ -108,7 +108,7 @@ export class UserRepository {
       if (!user) {
         throw new NotFoundException('User not found');
       }
-      if (profile.id !== user.id || (profile.id !== user.id && !(profile.admin ?? false))) {
+      if (profile.id !== user.id && !profile.admin) {
         throw new ForbiddenException('You do not have permission to update this user');
       }
     
@@ -165,7 +165,7 @@ export class UserRepository {
     if (!user) {
       throw new NotFoundException('User not found');
     }
-    if (profile.id !== user.id && !(profile.admin ?? false)) {
+    if (profile.id !== user.id && !profile.admin) {
       throw new ForbiddenException('You do not have permission to delete this user');
     }
     
