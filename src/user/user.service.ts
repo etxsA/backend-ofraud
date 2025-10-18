@@ -23,7 +23,12 @@ export class UserService {
         return this.userRepository.createUser(createUserDto, salt);; 
     }
 
-    async login(user: LoginDto): Promise<UserModel> {
+  async createAdmin(createUserDto: CreateUserDto): Promise<UserResponseDto> {
+    const salt = 'salt'; // Change this to a proper salt generation
+    const hashedPassword = hashPassword(createUserDto.password, salt);
+    createUserDto.password = hashedPassword;
+    return await this.userRepository.createAdmin(createUserDto, salt);
+  }    async login(user: LoginDto): Promise<UserModel> {
 
         const foundUser: UserModel = await this.userRepository.findByEmail(user.email);
 

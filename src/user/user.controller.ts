@@ -5,6 +5,7 @@ import { UserService } from "./user.service";
 import { ApiBearerAuth, ApiOperation, ApiResponse, ApiTags } from "@nestjs/swagger";
 import { JwtAuthGuard } from "src/common/guards/jwt-auth.guard";
 import type { AuthenticatedRequest } from "src/interfaces/authenticated_request";
+import { AdminGuard } from "src/common/guards/admin.guard";
 
 @ApiTags("Enpoints for user management")
 @Controller("users")
@@ -17,6 +18,17 @@ export class UserController {
     @ApiResponse({ status: 500, description: 'Internal server error, email already in use or other error.'})
     async createUser(@Body() createUserDto: CreateUserDto): Promise<UserResponseDto> {
         return this.userService.createUser(createUserDto);
+    }
+
+    @Post('admin')
+    @UseGuards(AdminGuard)
+    @ApiBearerAuth()
+    @ApiOperation({ summary: 'Create an admin user, only accessible by an admin' })
+    @ApiResponse({ status: 201, description: 'The admin has been created.' })
+    @ApiResponse({ status: 403, description: 'Forbidden.' })
+    @ApiResponse({ status: 401, description: 'Unauthorized.' })
+    async createAdmin(@Body() createUserDto: CreateUserDto): Promise<UserResponseDto> {
+        return this.userService.createAdmin(createUserDto);
     }
 
     @Patch()
