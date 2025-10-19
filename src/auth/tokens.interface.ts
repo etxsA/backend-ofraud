@@ -5,6 +5,7 @@ export class UserProfile {
     name: string;
     email: string;
     admin?: boolean;
+    profile_pic_url?: string;
 }
 
 export class AccessPayload {

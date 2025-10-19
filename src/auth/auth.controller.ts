@@ -49,6 +49,7 @@ export class AuthController {
         name: 'Jose Torres',
         email: 'email@email.com',
         admin: null,
+        profile_pic_url: 'https://example.com/profile.jpg'
     }})
     @UseGuards(JwtAuthGuard)
     getProfile(@Req() req: AuthenticatedRequest) {

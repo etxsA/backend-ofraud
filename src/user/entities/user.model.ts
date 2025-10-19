@@ -7,7 +7,7 @@ export class UserModel {
     password: string;
     salt?: string;
     creation_date: Date;
-    profilePic?: string
+    profile_pic_url?: string;
     admin?: boolean;
     update_date?: Date;
     deleted_at?: Date;

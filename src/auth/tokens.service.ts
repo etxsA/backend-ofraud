@@ -17,6 +17,7 @@ export class TokensService {
           name: profile.name,
           email: profile.email,
           admin: profile.admin,
+          profile_pic_url: profile.profile_pic_url,
         },
       },
       {
