@@ -9,7 +9,7 @@ export class DbService implements OnModuleInit, OnModuleDestroy {
 
     onModuleInit() {
         this.pool = createPool ({
-            host: 'localhost',
+            host: process.env.DB_URL ?? 'localhost',
             user: 'access1',
             password: 'access1-p',
             database: 'oFraud'

@@ -18,16 +18,17 @@ import {
   ApiTags,
 } from '@nestjs/swagger';
 import { AdminGuard } from 'src/common/guards/admin.guard';
+import { JwtAuthGuard } from 'src/common/guards/jwt-auth.guard';
 
-@ApiTags('Endpoints for category management, only accessible by admins')
+@ApiTags('Endpoints for category management')
 @Controller('category')
-@UseGuards(AdminGuard)
 @ApiBearerAuth()
 export class CategoryController {
   constructor(private readonly categoryService: CategoryService) {}
 
+  @UseGuards(AdminGuard)
   @Post()
-  @ApiOperation({ summary: 'Create category' })
+  @ApiOperation({ summary: 'Create category, only by admin' })
   @ApiResponse({
     status: 201,
     description: 'The category has been created.',
@@ -43,6 +44,7 @@ export class CategoryController {
     return this.categoryService.create(createCategoryDto);
   }
 
+  @UseGuards(JwtAuthGuard)
   @Get()
   @ApiOperation({ summary: 'Get all categories' })
   @ApiResponse({
@@ -61,6 +63,7 @@ export class CategoryController {
     return this.categoryService.findAll();
   }
 
+  @UseGuards(JwtAuthGuard)
   @Get(':id')
   @ApiOperation({ summary: 'Get category by id' })
   @ApiResponse({
@@ -78,8 +81,9 @@ export class CategoryController {
     return this.categoryService.findOne(+id);
   }
 
+  @UseGuards(AdminGuard)
   @Patch(':id')
-  @ApiOperation({ summary: 'Update category by id' })
+  @ApiOperation({ summary: 'Update category by id, only by admin' })
   @ApiResponse({
     status: 200,
     description: 'The category has been updated.',
@@ -99,8 +103,9 @@ export class CategoryController {
     return this.categoryService.update(Number(id), updateCategoryDto);
   }
 
+  @UseGuards(AdminGuard)
   @Delete(':id')
-  @ApiOperation({ summary: 'Delete category by id' })
+  @ApiOperation({ summary: 'Delete category by id, only by admins' })
   @ApiResponse({
     status: 200,
     description: 'The category has been deleted.',
