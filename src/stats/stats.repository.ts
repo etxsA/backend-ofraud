@@ -1,5 +1,10 @@
 import { Injectable, InternalServerErrorException } from '@nestjs/common';
+import { RowDataPacket } from 'mysql2';
 import { DbService } from 'src/db/db.service';
+
+interface Count extends RowDataPacket {
+  count: number;
+}
 
 @Injectable()
 export class StatsRepository {
@@ -52,6 +57,58 @@ export class StatsRepository {
       return rows as any[];
     } catch (error) {
       throw new InternalServerErrorException((error as Error).message);
+    }
+  }
+
+  async countUsers(): Promise<number> {
+    const sql = 'SELECT COUNT(*) as count FROM user WHERE deleted_at IS NULL';
+    try {
+      const [rows] = await this.dbService.getPool().query<Count[]>(sql);
+      return rows[0].count;
+    } catch (error) {
+      throw new InternalServerErrorException(
+        'Error counting users',
+        (error as Error).message,
+      );
+    }
+  }
+
+  async countReports(): Promise<number> {
+    const sql = 'SELECT COUNT(*) as count FROM report';
+    try {
+      const [rows] = await this.dbService.getPool().query<Count[]>(sql);
+      return rows[0].count;
+    } catch (error) {
+      throw new InternalServerErrorException(
+        'Error counting reports',
+        (error as Error).message,
+      );
+    }
+  }
+
+  async countLikes(): Promise<number> {
+    const sql = 'SELECT COUNT(*) as count FROM `like`';
+    try {
+      const [rows] = await this.dbService.getPool().query<Count[]>(sql);
+      return rows[0].count;
+    } catch (error) {
+      throw new InternalServerErrorException(
+        'Error counting likes',
+        (error as Error).message,
+      );
+    }
+  }
+
+  async countComments(): Promise<number> {
+    const sql = 'SELECT COUNT(*) as count FROM comment';
+    try {
+      const [rows] = await this.dbService.getPool().query<Count[]>(sql);
+      return rows[0].count;
+    } catch (error) {
+      throw new InternalServerErrorException(
+        'Error counting comments',
+        (error as Error).message,
+      );
     }
   }
 }

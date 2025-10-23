@@ -17,4 +17,14 @@ export class StatsService {
   findUsersRegisteredSince(since: string) {
     return this.statsRepository.findUsersRegisteredSince(since);
   }
+
+  async getDashboardStats() {
+    const [users, reports, likes, comments] = await Promise.all([
+      this.statsRepository.countUsers(),
+      this.statsRepository.countReports(),
+      this.statsRepository.countLikes(),
+      this.statsRepository.countComments(),
+    ]);
+    return { users, reports, likes, comments };
+  }
 }

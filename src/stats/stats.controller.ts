@@ -1,11 +1,18 @@
 /* eslint-disable prettier/prettier */
 import { Controller, Get, Query, UseGuards } from '@nestjs/common';
 import { StatsService } from './stats.service';
-import { ApiBearerAuth, ApiOperation, ApiQuery, ApiResponse, ApiTags } from '@nestjs/swagger';
+import {
+  ApiBearerAuth,
+  ApiOperation,
+  ApiQuery,
+  ApiResponse,
+  ApiTags,
+} from '@nestjs/swagger';
 import { JwtAuthGuard } from 'src/common/guards/jwt-auth.guard';
 import { TopReportDto } from './dto/top-report.dto';
 import { TopUserDto } from './dto/top-user.dto';
 import { UserRegistrationStatsDto } from './dto/user-registration-stats.dto';
+import { DashboardStatsDto } from './dto/dashboard-stats.dto';
 
 @ApiTags('Endpoints for statistics')
 @Controller('stats')
@@ -13,6 +20,23 @@ import { UserRegistrationStatsDto } from './dto/user-registration-stats.dto';
 @ApiBearerAuth()
 export class StatsController {
   constructor(private readonly statsService: StatsService) {}
+
+  @Get('dashboard')
+  @ApiOperation({ summary: 'Get dashboard statistics' })
+  @ApiResponse({
+    status: 200,
+    description: 'Dashboard statistics.',
+    type: DashboardStatsDto,
+    example: {
+      user: 1500,
+      reports: 3500,
+      comments: 12000,
+      likes: 45000,
+    },
+  })
+  getDashboardStats() {
+    return this.statsService.getDashboardStats();
+  }
 
   @Get('top-reports')
   @ApiOperation({ summary: 'Get top 10 most liked reports' })
