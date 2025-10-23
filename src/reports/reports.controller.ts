@@ -145,6 +145,37 @@ export class ReportsController {
     return this.reportsService.findByStatus(+statusId);
   }
 
+  @Get('user/:userId')
+  @UseGuards(JwtAuthGuard)
+  @ApiBearerAuth()
+  @ApiOperation({ summary: 'Get reports by user id' })
+  @ApiResponse({
+    status: 200,
+    description: 'Return reports by user id.',
+    example: [
+      {
+        id: 1,
+        title: 'Report Title',
+        description: 'Report Description',
+        report_pic_url: 'http://example.com/pic.jpg',
+        category_id: 2,
+        user_id: 1,
+        reference_url: 'http://example.com',
+        creation_date: '2025-10-14T00:00:00.000Z',
+        status_id: 1,
+        deleted_at: null,
+      },
+    ],
+  })
+  @ApiResponse({
+    status: 404,
+    description: 'No reports found for this user.',
+  })
+  @ApiResponse({ status: 401, description: 'Unauthorized.' })
+  findByUserId(@Param('userId') userId: string) {
+    return this.reportsService.findByUserId(+userId);
+  }
+
   @Get(':id')
   @UseGuards(JwtAuthGuard)
   @ApiBearerAuth()

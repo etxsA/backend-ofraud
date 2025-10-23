@@ -62,6 +62,12 @@ export class ReportRepository {
     return reports[0];
   }
 
+  async findByUserId(userId: number): Promise<ReportModel[]> {
+    const sql = `SELECT * FROM report WHERE user_id = ? AND deleted_at IS NULL`;
+    const [rows] = await this.dbService.getPool().query(sql, [userId]);
+    return rows as ReportModel[];
+  }
+
   async updateReport(id: number, updateReportDto: UpdateReportDto, profile: UserProfile): Promise<UpdateReportResponseDto> {
     const report = await this.findById(id);
     if (!report) {
