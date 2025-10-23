@@ -6,6 +6,14 @@ import { ReportResponseDto, UpdateReportResponseDto, DeleteReportResponseDto } f
 import { ReportModel } from "./entities/report.model";
 import { UserProfile } from "src/auth/tokens.interface";
 import { UpdateReportDto } from "./dto/update-report.dto";
+import { ReportStatsDto } from "./dto/report-stats.dto";
+import { RowDataPacket } from "mysql2";
+
+interface ReportStatsQueryResult extends RowDataPacket {
+  totalReports: string;
+  acceptedReports: string;
+  rejectedReports: string;
+}
 
 @Injectable()
 export class ReportRepository {
@@ -66,6 +74,28 @@ export class ReportRepository {
     const sql = `SELECT * FROM report WHERE user_id = ? AND deleted_at IS NULL`;
     const [rows] = await this.dbService.getPool().query(sql, [userId]);
     return rows as ReportModel[];
+  }
+
+  async getReportStatsByUserId(userId: number): Promise<ReportStatsDto> {
+    const sql = `
+      SELECT
+        COUNT(*) AS totalReports,
+        SUM(CASE WHEN status_id = 3 THEN 1 ELSE 0 END) AS acceptedReports,
+        SUM(CASE WHEN status_id = 2 THEN 1 ELSE 0 END) AS rejectedReports
+      FROM report
+      WHERE user_id = ? AND deleted_at IS NULL;
+    `;
+    try {
+      const [rows] = await this.dbService.getPool().query<ReportStatsQueryResult[]>(sql, [userId]);
+      const stats = rows[0];
+      return {
+        totalReports: parseInt(stats.totalReports, 10) || 0,
+        acceptedReports: parseInt(stats.acceptedReports, 10) || 0,
+        rejectedReports: parseInt(stats.rejectedReports, 10) || 0,
+      };
+    } catch (error) {
+      throw new InternalServerErrorException('Error fetching report stats', (error as Error).message);
+    }
   }
 
   async updateReport(id: number, updateReportDto: UpdateReportDto, profile: UserProfile): Promise<UpdateReportResponseDto> {

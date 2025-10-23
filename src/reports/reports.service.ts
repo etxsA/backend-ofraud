@@ -33,6 +33,10 @@ export class ReportsService {
     return this.reportRepository.findByUserId(userId);
   }
 
+  getReportStatsByUserId(userId: number) {
+    return this.reportRepository.getReportStatsByUserId(userId);
+  }
+
   findOne(id: number) {
     return this.reportRepository.findById(id);
   }

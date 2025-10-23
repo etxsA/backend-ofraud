@@ -23,6 +23,7 @@ import {
 } from '@nestjs/swagger';
 import { AdminGuard } from 'src/common/guards/admin.guard';
 import { UpdateReportStatusDto } from './dto/update-report-status.dto';
+import { ReportStatsDto } from './dto/report-stats.dto';
 
 @ApiTags('Endpoints for report management')
 @Controller('reports')
@@ -174,6 +175,20 @@ export class ReportsController {
   @ApiResponse({ status: 401, description: 'Unauthorized.' })
   findByUserId(@Param('userId') userId: string) {
     return this.reportsService.findByUserId(+userId);
+  }
+
+  @Get('stats/:userId')
+  @UseGuards(JwtAuthGuard)
+  @ApiBearerAuth()
+  @ApiOperation({ summary: 'Get report statistics for a user' })
+  @ApiResponse({
+    status: 200,
+    description: 'Return report statistics for a user.',
+    type: ReportStatsDto,
+  })
+  @ApiResponse({ status: 401, description: 'Unauthorized.' })
+  getReportStatsByUserId(@Param('userId') userId: string) {
+    return this.reportsService.getReportStatsByUserId(+userId);
   }
 
   @Get(':id')
