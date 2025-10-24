@@ -31,4 +31,8 @@ export class StatsService {
   findReportsByDayLastWeek() {
     return this.statsRepository.findReportsByDayLastWeek();
   }
+
+  findTopReportedPages() {
+    return this.statsRepository.findTopReportedPages();
+  }
 }

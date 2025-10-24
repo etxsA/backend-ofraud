@@ -2,6 +2,7 @@ import { Injectable, InternalServerErrorException } from '@nestjs/common';
 import { RowDataPacket } from 'mysql2';
 import { DbService } from 'src/db/db.service';
 import { ReportsByDayStatsDto } from './dto/reports-by-day-stats.dto';
+import { TopReportedPagesDto } from './dto/top-reported-pages.dto';
 
 interface Count extends RowDataPacket {
   count: number;
@@ -9,6 +10,11 @@ interface Count extends RowDataPacket {
 
 interface ReportsByDayQueryResult extends RowDataPacket {
   date: string;
+  count: number;
+}
+
+interface TopReportedPagesQueryResult extends RowDataPacket {
+  reference_url: string;
   count: number;
 }
 
@@ -137,6 +143,31 @@ export class StatsRepository {
     } catch (error) {
       throw new InternalServerErrorException(
         'Error fetching reports by day',
+        (error as Error).message,
+      );
+    }
+  }
+
+  async findTopReportedPages(): Promise<TopReportedPagesDto[]> {
+    const sql = `
+      SELECT reference_url, COUNT(id) as count
+      FROM report
+      WHERE reference_url IS NOT NULL AND reference_url != ''
+      GROUP BY reference_url
+      ORDER BY count DESC
+      LIMIT 10;
+    `;
+    try {
+      const [rows] = await this.dbService
+        .getPool()
+        .query<TopReportedPagesQueryResult[]>(sql);
+      return rows.map((row) => ({
+        reference_url: row.reference_url,
+        count: Number(row.count),
+      }));
+    } catch (error) {
+      throw new InternalServerErrorException(
+        'Error fetching top reported pages',
         (error as Error).message,
       );
     }

@@ -14,6 +14,7 @@ import { TopUserDto } from './dto/top-user.dto';
 import { UserRegistrationStatsDto } from './dto/user-registration-stats.dto';
 import { DashboardStatsDto } from './dto/dashboard-stats.dto';
 import { ReportsByDayStatsDto } from './dto/reports-by-day-stats.dto';
+import { TopReportedPagesDto } from './dto/top-reported-pages.dto';
 
 @ApiTags('Endpoints for statistics')
 @Controller('stats')
@@ -96,5 +97,28 @@ export class StatsController {
   })
   findReportsByDayLastWeek() {
     return this.statsService.findReportsByDayLastWeek();
+  }
+
+  @Get('top-reported-pages')
+  @ApiOperation({ summary: 'Get top 10 most reported pages' })
+  @ApiResponse({
+    status: 200,
+    description: 'Top 10 most reported pages.',
+    type: [TopReportedPagesDto],
+    example: [
+      { reference_url: 'http://example.com/page1', count: 50 },
+      { reference_url: 'http://example.com/page2', count: 45 },
+      { reference_url: 'http://example.com/page3', count: 40 },
+      { reference_url: 'http://example.com/page4', count: 35 },
+      { reference_url: 'http://example.com/page5', count: 30 },
+      { reference_url: 'http://example.com/page6', count: 25 },
+      { reference_url: 'http://example.com/page7', count: 20 },
+      { reference_url: 'http://example.com/page8', count: 15 },
+      { reference_url: 'http://example.com/page9', count: 10 },
+      { reference_url: 'http://example.com/page10', count: 5 },
+    ],  
+  })
+  findTopReportedPages() {
+    return this.statsService.findTopReportedPages();
   }
 }
