@@ -15,6 +15,7 @@ import { UserRegistrationStatsDto } from './dto/user-registration-stats.dto';
 import { DashboardStatsDto } from './dto/dashboard-stats.dto';
 import { ReportsByDayStatsDto } from './dto/reports-by-day-stats.dto';
 import { TopReportedPagesDto } from './dto/top-reported-pages.dto';
+import { LikesByDayStatsDto } from './dto/likes-by-date-stats-dto';
 
 @ApiTags('Endpoints for statistics')
 @Controller('stats')
@@ -100,7 +101,7 @@ export class StatsController {
   }
 
   @Get('reports-by-day-accepted')
-  @ApiOperation({ summary: 'Get the number of reports per day for the last 7 days' })
+  @ApiOperation({ summary: 'Get the number of only accepted reports per day for the last 7 days' })
   @ApiResponse({
     status: 200,
     description: 'Number of reports per day for the last week.',
@@ -163,7 +164,7 @@ export class StatsController {
   }
 
   @Get('reports-by-day-user-accepted')
-  @ApiOperation({ summary: 'Get the number of reports per day for the last 7 days from a single user' })
+  @ApiOperation({ summary: 'Get the number of only accepted reports per day for the last 7 days from a single user' })
   @ApiResponse({
     status: 200,
     description: 'Number of reports per day for the last week.',
@@ -180,5 +181,25 @@ export class StatsController {
   })
   findReportsByDayLastWeekUserAccepted(@Query('id') id: Number) {
     return this.statsService.findReportsByDayLastWeekUserAccepted(id);
+  }
+
+  @Get('likes-by-day-user')
+  @ApiOperation({ summary: 'Get the number of likes in a certain user reports, per day on last 7 days' })
+  @ApiResponse({
+    status: 200,
+    description: 'Number of reports per day for the last week.',
+    type: [LikesByDayStatsDto],
+    example: [
+      { date: '2024-10-08T06:00:00.000Z', like_count: 15 },
+      { date: '2024-10-09T00:00:00.000Z', like_count: 22 },
+      { date: '2024-10-10T00:00:00.000Z', like_count: 18 },
+      { date: '2024-10-11T00:00:00.000Z', like_count: 25 },
+      { date: '2024-10-12T00:00:00.000Z', like_count: 30 },
+      { date: '2024-10-13T00:00:00.000Z', like_count: 27 },
+      { date: '2024-10-14T00:00:00.000Z', like_count: 20 },
+    ],
+  })
+  findLikesByDayLastWeek(@Query('id') id: Number) {
+    return this.statsService.findLikesByDayLastWeek(id);
   }
 }

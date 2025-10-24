@@ -47,4 +47,8 @@ export class StatsService {
   findReportsByDayLastWeekUserAccepted(user_id: Number) {
     return this.statsRepository.findReportsByDayLastWeekUserAccepted(user_id);
   }
+
+  findLikesByDayLastWeek(userId: Number) {
+    return this.statsRepository.findLikesByDayLastWeek(userId);
+  }
 }

@@ -3,6 +3,7 @@ import { RowDataPacket } from 'mysql2';
 import { DbService } from 'src/db/db.service';
 import { ReportsByDayStatsDto } from './dto/reports-by-day-stats.dto';
 import { TopReportedPagesDto } from './dto/top-reported-pages.dto';
+import { LikesByDayStatsDto } from './dto/likes-by-date-stats-dto';
 
 interface Count extends RowDataPacket {
   count: number;
@@ -16,6 +17,11 @@ interface ReportsByDayQueryResult extends RowDataPacket {
 interface TopReportedPagesQueryResult extends RowDataPacket {
   reference_url: string;
   count: number;
+}
+
+interface LikesByDayQueryResult extends RowDataPacket {
+  date: string;
+  likes_count: number;
 }
 
 @Injectable()
@@ -290,6 +296,45 @@ export class StatsRepository {
     } catch (error) {
       throw new InternalServerErrorException(
         'Error fetching user reports by day',
+        (error as Error).message,
+      );
+    }
+  }
+
+  async findLikesByDayLastWeek(userId: Number): Promise<LikesByDayStatsDto[]> {
+    const sql = `
+      WITH RECURSIVE last_7_days AS (
+        SELECT CURDATE() - INTERVAL 6 DAY AS date
+        UNION ALL
+        SELECT date + INTERVAL 1 DAY
+        FROM last_7_days
+        WHERE date + INTERVAL 1 DAY <= CURDATE()
+      )
+      SELECT 
+        d.date,
+        COUNT(r.id) AS likes_count
+      FROM last_7_days d
+      LEFT JOIN \`like\` l 
+        ON DATE(l.creation_date) = d.date
+      LEFT JOIN report r 
+        ON l.report_id = r.id AND r.user_id = ?
+      GROUP BY d.date
+      ORDER BY d.date DESC;
+    `;
+
+    try {
+      const [rows] = await this.dbService
+        .getPool()
+        .query<LikesByDayQueryResult[]>(sql, [userId]);
+      
+        return rows.map((row) => ({
+          date: row.date, 
+          likes_count: Number(row.likes_count)
+        }));
+
+    } catch (error) {
+      throw new InternalServerErrorException(
+        'Error fetching likes by day',
         (error as Error).message,
       );
     }
