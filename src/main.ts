@@ -9,7 +9,7 @@ async function bootstrap() {
   const app = await NestFactory.create(AppModule);
 
   app.enableCors({
-    origin: 'http://localhost:3000',
+    origin: ['http://localhost:3000', 'http://10.48.201.165:3000'],
     methods: 'GET,,PUT,PATCH,POST,DELETE,OPTIONS',});
   const config = new DocumentBuilder()
     .setTitle('API ofraud')
@@ -24,6 +24,6 @@ async function bootstrap() {
     jsonDocumentUrl: 'api/json',
   });
 
-  await app.listen(process.env.PORT ?? 3000);
+  await app.listen(process.env.PORT ?? 3001);
 }
 void bootstrap();

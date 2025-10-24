@@ -32,7 +32,19 @@ export class StatsService {
     return this.statsRepository.findReportsByDayLastWeek();
   }
 
+  findReportsByDayLastWeekAccepted() {
+    return this.statsRepository.findReportsByDayLastWeekAccepted();
+  }
+
   findTopReportedPages() {
     return this.statsRepository.findTopReportedPages();
+  }
+
+  findReportsByDayLastWeekUser(user_id: Number) {
+    return this.statsRepository.findReportsByDayLastWeekUser(user_id);
+  }
+
+  findReportsByDayLastWeekUserAccepted(user_id: Number) {
+    return this.statsRepository.findReportsByDayLastWeekUserAccepted(user_id);
   }
 }

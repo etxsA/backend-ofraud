@@ -99,6 +99,26 @@ export class StatsController {
     return this.statsService.findReportsByDayLastWeek();
   }
 
+  @Get('reports-by-day-accepted')
+  @ApiOperation({ summary: 'Get the number of reports per day for the last 7 days' })
+  @ApiResponse({
+    status: 200,
+    description: 'Number of reports per day for the last week.',
+    type: [ReportsByDayStatsDto],
+    example: [
+      { date: '2024-10-08T06:00:00.000Z', count: 15 },
+      { date: '2024-10-09T00:00:00.000Z', count: 22 },
+      { date: '2024-10-10T00:00:00.000Z', count: 18 },
+      { date: '2024-10-11T00:00:00.000Z', count: 25 },
+      { date: '2024-10-12T00:00:00.000Z', count: 30 },
+      { date: '2024-10-13T00:00:00.000Z', count: 27 },
+      { date: '2024-10-14T00:00:00.000Z', count: 20 },
+    ],
+  })
+  findReportsByDayLastWeekAccepted() {
+    return this.statsService.findReportsByDayLastWeekAccepted();
+  }
+
   @Get('top-reported-pages')
   @ApiOperation({ summary: 'Get top 10 most reported pages' })
   @ApiResponse({
@@ -120,5 +140,45 @@ export class StatsController {
   })
   findTopReportedPages() {
     return this.statsService.findTopReportedPages();
+  }
+
+  @Get('reports-by-day-user')
+  @ApiOperation({ summary: 'Get the number of reports per day for the last 7 days from a single user' })
+  @ApiResponse({
+    status: 200,
+    description: 'Number of reports per day for the last week.',
+    type: [ReportsByDayStatsDto],
+    example: [
+      { date: '2024-10-08T06:00:00.000Z', count: 15 },
+      { date: '2024-10-09T00:00:00.000Z', count: 22 },
+      { date: '2024-10-10T00:00:00.000Z', count: 18 },
+      { date: '2024-10-11T00:00:00.000Z', count: 25 },
+      { date: '2024-10-12T00:00:00.000Z', count: 30 },
+      { date: '2024-10-13T00:00:00.000Z', count: 27 },
+      { date: '2024-10-14T00:00:00.000Z', count: 20 },
+    ],
+  })
+  findReportsByDayLastWeekUser(@Query('id') id: Number) {
+    return this.statsService.findReportsByDayLastWeekUser(id);
+  }
+
+  @Get('reports-by-day-user-accepted')
+  @ApiOperation({ summary: 'Get the number of reports per day for the last 7 days from a single user' })
+  @ApiResponse({
+    status: 200,
+    description: 'Number of reports per day for the last week.',
+    type: [ReportsByDayStatsDto],
+    example: [
+      { date: '2024-10-08T06:00:00.000Z', count: 15 },
+      { date: '2024-10-09T00:00:00.000Z', count: 22 },
+      { date: '2024-10-10T00:00:00.000Z', count: 18 },
+      { date: '2024-10-11T00:00:00.000Z', count: 25 },
+      { date: '2024-10-12T00:00:00.000Z', count: 30 },
+      { date: '2024-10-13T00:00:00.000Z', count: 27 },
+      { date: '2024-10-14T00:00:00.000Z', count: 20 },
+    ],
+  })
+  findReportsByDayLastWeekUserAccepted(@Query('id') id: Number) {
+    return this.statsService.findReportsByDayLastWeekUserAccepted(id);
   }
 }

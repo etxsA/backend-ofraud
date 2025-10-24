@@ -126,11 +126,56 @@ export class StatsRepository {
 
   async findReportsByDayLastWeek(): Promise<ReportsByDayStatsDto[]> {
     const sql = `
-      SELECT DATE(creation_date) as date, COUNT(id) as count
-      FROM report
-      WHERE creation_date >= CURDATE() - INTERVAL 7 DAY
-      GROUP BY DATE(creation_date)
-      ORDER BY date ASC;
+      WITH RECURSIVE last_7_days AS (
+        SELECT CURDATE() - INTERVAL 6 DAY AS date
+        UNION ALL
+        SELECT date + INTERVAL 1 DAY
+        FROM last_7_days
+        WHERE date + INTERVAL 1 DAY <= CURDATE()
+      )
+      SELECT 
+        d.date,
+        COALESCE(COUNT(r.id), 0) AS count
+      FROM last_7_days d
+      LEFT JOIN report r
+        ON DATE(r.creation_date) = d.date
+      GROUP BY d.date
+      ORDER BY d.date ASC;
+    `;
+    try {
+      const [rows] = await this.dbService
+        .getPool()
+        .query<ReportsByDayQueryResult[]>(sql);
+      return rows.map((row) => ({
+        date: row.date,
+        count: Number(row.count),
+      }));
+    } catch (error) {
+      throw new InternalServerErrorException(
+        'Error fetching reports by day',
+        (error as Error).message,
+      );
+    }
+  }
+
+  async findReportsByDayLastWeekAccepted(): Promise<ReportsByDayStatsDto[]> {
+    const sql = `
+      WITH RECURSIVE last_7_days AS (
+        SELECT CURDATE() - INTERVAL 6 DAY AS date
+        UNION ALL
+        SELECT date + INTERVAL 1 DAY
+        FROM last_7_days
+        WHERE date + INTERVAL 1 DAY <= CURDATE()
+      )
+      SELECT 
+        d.date,
+        COALESCE(COUNT(r.id), 0) AS count
+      FROM last_7_days d
+      LEFT JOIN report r
+        ON DATE(r.creation_date) = d.date 
+        AND r.status_id=3
+      GROUP BY d.date
+      ORDER BY d.date ASC;
     `;
     try {
       const [rows] = await this.dbService
@@ -168,6 +213,83 @@ export class StatsRepository {
     } catch (error) {
       throw new InternalServerErrorException(
         'Error fetching top reported pages',
+        (error as Error).message,
+      );
+    }
+  }
+
+  async findReportsByDayLastWeekUser(userId: Number): Promise<ReportsByDayStatsDto[]> {
+    const sql = `
+      WITH RECURSIVE last_7_days AS (
+        SELECT CURDATE() - INTERVAL 6 DAY AS date
+        UNION ALL
+        SELECT date + INTERVAL 1 DAY
+        FROM last_7_days
+        WHERE date + INTERVAL 1 DAY <= CURDATE()
+      )
+      SELECT 
+        d.date,
+        COALESCE(COUNT(r.id), 0) AS count
+      FROM last_7_days d
+      LEFT JOIN report r
+        ON DATE(r.creation_date) = d.date
+        AND r.user_id = ?  
+      GROUP BY d.date
+      ORDER BY d.date ASC;
+    `;
+
+    try {
+      const [rows] = await this.dbService
+        .getPool()
+        .query<ReportsByDayQueryResult[]>(sql, [userId]);
+      
+        return rows.map((row)=>({
+          date: row.date, 
+          count: Number(row.count),
+        }));
+
+    } catch (error) {
+      throw new InternalServerErrorException(
+        'Error fetching user reports by day',
+        (error as Error).message,
+      );
+    }
+  }
+
+  async findReportsByDayLastWeekUserAccepted(userId: Number): Promise<ReportsByDayStatsDto[]> {
+    const sql = `
+      WITH RECURSIVE last_7_days AS (
+        SELECT CURDATE() - INTERVAL 6 DAY AS date
+        UNION ALL
+        SELECT date + INTERVAL 1 DAY
+        FROM last_7_days
+        WHERE date + INTERVAL 1 DAY <= CURDATE()
+      )
+      SELECT 
+        d.date,
+        COALESCE(COUNT(r.id), 0) AS count
+      FROM last_7_days d
+      LEFT JOIN report r
+        ON DATE(r.creation_date) = d.date
+        AND r.user_id = ?  
+        AND r.status_id = 3
+      GROUP BY d.date
+      ORDER BY d.date ASC;
+    `;
+
+    try {
+      const [rows] = await this.dbService
+        .getPool()
+        .query<ReportsByDayQueryResult[]>(sql, [userId]);
+      
+        return rows.map((row)=>({
+          date: row.date, 
+          count: Number(row.count),
+        }));
+
+    } catch (error) {
+      throw new InternalServerErrorException(
+        'Error fetching user reports by day',
         (error as Error).message,
       );
     }
