@@ -27,4 +27,8 @@ export class StatsService {
     ]);
     return { users, reports, likes, comments };
   }
+
+  findReportsByDayLastWeek() {
+    return this.statsRepository.findReportsByDayLastWeek();
+  }
 }

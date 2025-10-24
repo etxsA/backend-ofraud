@@ -13,6 +13,7 @@ import { TopReportDto } from './dto/top-report.dto';
 import { TopUserDto } from './dto/top-user.dto';
 import { UserRegistrationStatsDto } from './dto/user-registration-stats.dto';
 import { DashboardStatsDto } from './dto/dashboard-stats.dto';
+import { ReportsByDayStatsDto } from './dto/reports-by-day-stats.dto';
 
 @ApiTags('Endpoints for statistics')
 @Controller('stats')
@@ -75,5 +76,25 @@ export class StatsController {
   })
   findUsersRegisteredSince(@Query('since') since: string) {
     return this.statsService.findUsersRegisteredSince(since);
+  }
+
+  @Get('reports-by-day')
+  @ApiOperation({ summary: 'Get the number of reports per day for the last 7 days' })
+  @ApiResponse({
+    status: 200,
+    description: 'Number of reports per day for the last week.',
+    type: [ReportsByDayStatsDto],
+    example: [
+      { date: '2024-10-08T06:00:00.000Z', count: 15 },
+      { date: '2024-10-09T00:00:00.000Z', count: 22 },
+      { date: '2024-10-10T00:00:00.000Z', count: 18 },
+      { date: '2024-10-11T00:00:00.000Z', count: 25 },
+      { date: '2024-10-12T00:00:00.000Z', count: 30 },
+      { date: '2024-10-13T00:00:00.000Z', count: 27 },
+      { date: '2024-10-14T00:00:00.000Z', count: 20 },
+    ],
+  })
+  findReportsByDayLastWeek() {
+    return this.statsService.findReportsByDayLastWeek();
   }
 }
