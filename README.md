@@ -133,7 +133,7 @@ backend-ofraud/
 | PORT | Puerto en el que correrá el Backend | 3001                 |
 | DB_URL | URL donde se encuentra la base de datos | localhost                 |
 
-Puedes seguir el ejemplo de .env.example para utilizar la aplicación de maenra directa
+Puedes seguir el ejemplo de .env.example para utilizar la aplicación de manera directa
 ```bash
 cp .env.example .env
 ```
