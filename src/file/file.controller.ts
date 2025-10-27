@@ -4,7 +4,7 @@ import { FileInterceptor } from '@nestjs/platform-express';
 import { ApiResponse, ApiTags, ApiConsumes, ApiBody, ApiParam, ApiOperation, ApiBearerAuth } from '@nestjs/swagger';
 import { createReadStream, existsSync } from 'fs';
 import { diskStorage } from 'multer';
-import { join } from 'path';
+import { join, resolve } from 'path';
 import express from 'express';
 import { JwtAuthGuard } from 'src/common/guards/jwt-auth.guard';
 
@@ -68,7 +68,13 @@ export class FileController {
     @ApiParam({ name: 'filename', required: true, description: 'Name of the file to be downloaded', example: '1627384950_myfile.png' })
     downloadFile(@Param('filename') filename: string, @Res({ passthrough: true}) res: express.Response): StreamableFile {
         
-        const filePath = join(process.cwd(),'public','uploads', filename);
+        const uploadsRoot = resolve(process.cwd(), 'public', 'uploads');
+        const filePath = resolve(uploadsRoot, filename);
+        // Defensive: Ensure the resolved filePath is within the uploadsRoot directory
+        if (!filePath.startsWith(uploadsRoot + require('path').sep)) {
+            // Prevent directory traversal or access outside uploadsRoot
+            throw new NotFoundException(`File with name ${filename} not found`); // or use Forbidden; keeping NotFound for info-hiding
+        }
 
         if (!existsSync(filePath)) {
             throw new NotFoundException(`File with name ${filename} not found`);
