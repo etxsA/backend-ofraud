@@ -115,19 +115,24 @@ export class UserRepository {
       }
     
     
-    // Build the SQL update query dynamically based on provided fields
+    // Build the SQL update query dynamically based on provided fields, using parameterized queries for safety
     const fields: string[] = [];
+    const values: any[] = [];
     if (updateUserDto.name) {
-      fields.push(`name = '${updateUserDto.name}'`);
+      fields.push(`name = ?`);
+      values.push(updateUserDto.name);
     }
     if (updateUserDto.email) {
-      fields.push(`email = '${updateUserDto.email}'`);
+      fields.push(`email = ?`);
+      values.push(updateUserDto.email);
     }
     if (updateUserDto.password) {
-      fields.push(`password = '${updateUserDto.password}'`);
+      fields.push(`password = ?`);
+      values.push(updateUserDto.password);
     }
     if (updateUserDto.profile_pic_url) {
-      fields.push(`profile_pic_url = '${updateUserDto.profile_pic_url}'`);
+      fields.push(`profile_pic_url = ?`);
+      values.push(updateUserDto.profile_pic_url);
     }
 
     // If no fields to update, throw an error
@@ -135,9 +140,11 @@ export class UserRepository {
       throw new InternalServerErrorException('No fields to update');
     }
 
-    const sql = `UPDATE user SET ${fields.join(', ')} WHERE id = ${updateUserDto.id}`;
+    // Add the id parameter for WHERE clause
+    const sql = `UPDATE user SET ${fields.join(', ')} WHERE id = ?`;
+    values.push(updateUserDto.id);
     try {
-      const [result] = await this.dbService.getPool().query(sql);
+      const [result] = await this.dbService.getPool().query(sql, values);
       const updateResult = result as { affectedRows?: number };
 
       if (updateResult.affectedRows === 0) {
