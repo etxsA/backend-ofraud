@@ -1,9 +1,9 @@
 /* eslint-disable prettier/prettier */
 
-import { createHash } from "node:crypto";
+import * as bcrypt from "bcrypt";
 
 export function hashPassword(password: string, salt: string): string {
-
-    const hash = createHash("sha256").update(password + salt).digest("hex");
+    // Using bcrypt for secure password hashing
+    const hash = bcrypt.hashSync(password, salt);
     return hash;
 }
