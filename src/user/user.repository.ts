@@ -77,8 +77,8 @@ export class UserRepository {
   }
 
   async findById(id: number): Promise<UserModel> {
-    const sql = `SELECT * FROM user WHERE id = ${id} AND deleted_at IS NULL LIMIT 1`;
-    const [rows] = await this.dbService.getPool().query(sql);
+    const sql = "SELECT * FROM user WHERE id = ? AND deleted_at IS NULL LIMIT 1";
+    const [rows] = await this.dbService.getPool().query(sql, [id]);
     const users = rows as UserModel[];
     return users[0];
   }
