@@ -11,9 +11,10 @@ export class UserRepository {
 
   async createUser(createUserDto: CreateUserDto, salt: string): Promise<UserResponseDto> {
     const { name, email, password } = createUserDto;
-    const sql = `INSERT INTO user (name, email, password, salt, creation_date) VALUES ('${name}', '${email}', '${password}', '${salt}', '${new Date().toISOString().slice(0, 10)}')`;
-      try {
-      const [rows] = await this.dbService.getPool().query(sql);
+    const sql = "INSERT INTO user (name, email, password, salt, creation_date) VALUES (?, ?, ?, ?, ?)";
+    const values = [name, email, password, salt, new Date().toISOString().slice(0, 10)];
+    try {
+      const [rows] = await this.dbService.getPool().query(sql, values);
       const result = rows as { insertId?: number };
       
       if (!result) {
@@ -40,9 +41,10 @@ export class UserRepository {
 
   async createAdmin(createUserDto: CreateUserDto, salt: string): Promise<UserResponseDto> {
     const { name, email, password } = createUserDto;
-    const sql = `INSERT INTO user (name, email, password, salt, admin, creation_date) VALUES ('${name}', '${email}', '${password}', '${salt}', 1, '${new Date().toISOString().slice(0, 10)}')`;
+    const sql = "INSERT INTO user (name, email, password, salt, admin, creation_date) VALUES (?, ?, ?, ?, 1, ?)";
+    const values = [name, email, password, salt, new Date().toISOString().slice(0, 10)];
     try {
-      const [rows] = await this.dbService.getPool().query(sql);
+      const [rows] = await this.dbService.getPool().query(sql, values);
       const result = rows as { insertId?: number };
       
       if (!result) {
@@ -68,8 +70,8 @@ export class UserRepository {
 
   async findByEmail(email: string): Promise<UserModel> {
 
-    const sql = `SELECT * FROM user WHERE email = '${email}' AND deleted_at IS NULL LIMIT 1`;
-    const [rows] = await this.dbService.getPool().query(sql);
+    const sql = "SELECT * FROM user WHERE email = ? AND deleted_at IS NULL LIMIT 1";
+    const [rows] = await this.dbService.getPool().query(sql, [email]);
     const users = rows as UserModel[];
     return users[0];
   }
